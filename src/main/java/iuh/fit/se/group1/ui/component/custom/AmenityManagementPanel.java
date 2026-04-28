@@ -63,6 +63,8 @@ public class AmenityManagementPanel extends JPanel {
         initializeComponents();
         setupLayout();
         setupEventHandlers();
+
+        
     }
 
     private void initializeComponents() {

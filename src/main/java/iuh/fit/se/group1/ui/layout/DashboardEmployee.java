@@ -50,6 +50,11 @@ public class DashboardEmployee extends JPanel {
         loadDashboardData(TimeType.TODAY);
     }
 
+    public void reloadDashboardData() {
+        loadDashboardData(TimeType.TODAY);
+
+    }
+
     /**
      * Setup icons và màu sắc cho các card
      */

@@ -7,6 +7,7 @@ package iuh.fit.se.group1.ui.swing;
 import iuh.fit.se.group1.dto.AccountDTO;
 import iuh.fit.se.group1.dto.EmailRequest;
 import iuh.fit.se.group1.dto.EmployeeDTO;
+import iuh.fit.se.group1.enums.Role;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.ui.component.modal.SendResetCodeModal;
@@ -403,7 +404,7 @@ public class Login extends JFrame {
                             this.setTitle("Hệ thống quản lý khách sạn Đào Tiên");
                             currentLoginUsername = user;
                             panelBody.setCurrentEmployee((EmployeeDTO) employee.getData());
-                            panelBody.setAuth(true); // Default to true for now
+                            panelBody.setAuth(account.getRole().getRoleId().equals(Role.MANAGER.name()));
                             log.info("User '{}' login successfully", user);
                             animatorLogin.start();
                         });

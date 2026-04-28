@@ -1,5 +1,7 @@
 package iuh.fit.se.group1.network.client;
 
+import iuh.fit.se.group1.network.ClientEventBus;
+import iuh.fit.se.group1.network.CommandType;
 import iuh.fit.se.group1.network.Request;
 import iuh.fit.se.group1.network.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +56,8 @@ public class ClientSocketManager {
     }
 
     public CompletableFuture<Response> send(Request request) throws IOException {
-        if (!connected) throw new IOException("Not connected");
+        if (!connected)
+            throw new IOException("Not connected");
 
         String requestId = UUID.randomUUID().toString();
         request.setRequestId(requestId);
@@ -78,8 +81,15 @@ public class ClientSocketManager {
                 try {
                     Response res = (Response) in.readObject();
 
-                    CompletableFuture<Response> f = pending.remove(res.getRequestId());
-                    if (f != null) f.complete(res);
+                    String requestId = res.getRequestId();
+
+                    if (requestId == null) {
+                        handleResponse(res);
+                    } else {
+                        CompletableFuture<Response> f = pending.remove(requestId);
+                        if (f != null)
+                            f.complete(res);
+                    }
 
                 } catch (Exception e) {
                     connected = false;
@@ -90,19 +100,38 @@ public class ClientSocketManager {
         t.start();
     }
 
+    private void handleResponse(Response response) {
+        CommandType type = response.getCommandType();
+        log.info("Refreshing data for command: {} with message {}", type, response.getMessage());
+
+        switch (type) {
+            case ROOM_REFRESH -> ClientEventBus.roomEventBus.publish(response);
+            case AMENITY_REFRESH -> ClientEventBus.amenityEventBus.publish(response);
+            case PROMOTION_REFRESH -> ClientEventBus.promotionEventBus.publish(response);
+            case SURCHARGE_REFRESH -> ClientEventBus.surchargeEventBus.publish(response);
+            case ORDER_REFRESH -> ClientEventBus.orderEventBus.publish(response);
+            default -> {
+                log.warn("Received response with unhandled command type: " + type);
+            }
+        }
+    }
+
     public void disconnect() {
         connected = false;
 
         try {
-            if (out != null) out.close();
+            if (out != null)
+                out.close();
         } catch (Exception ignored) {
         }
         try {
-            if (in != null) in.close();
+            if (in != null)
+                in.close();
         } catch (Exception ignored) {
         }
         try {
-            if (socket != null) socket.close();
+            if (socket != null)
+                socket.close();
         } catch (Exception ignored) {
         }
     }

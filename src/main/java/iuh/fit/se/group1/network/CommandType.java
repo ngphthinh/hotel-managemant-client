@@ -9,7 +9,6 @@ public enum CommandType implements Serializable {
     AUTH_VALIDATE_MANAGER,
     AUTH_CHANGE_PASSWORD,
 
-
     EMPLOYEE_GET_BY_ID,
     EMPLOYEE_GET_BY_ACCOUNT_ID,
     EMPLOYEE_GET_BY_CITIZEN,
@@ -65,7 +64,6 @@ public enum CommandType implements Serializable {
     CUSTOMER_DELETE,
     CUSTOMER_GET_BY_CITIZEN,
 
-
     DASHBOARD_GET_DATA,
     DASHBOARD_PEAK_HOURS,
     EMAIL_SEND, DASHBOARD_GET_ROOMS,
@@ -84,7 +82,6 @@ public enum CommandType implements Serializable {
 
     DENOMINATION_AVAILABLE,
     DENOMINATION_DETAIL_SAVE_ALL,
-
 
     EXPORT_EXCEL,
     IMPORT_AMENITIES,
@@ -107,7 +104,6 @@ public enum CommandType implements Serializable {
     ROOM_TYPE_UPDATE,
     ROOM_TYPE_DELETE,
 
-
     SHIFT_GET_BY_ID,
     SHIFT_GET_ALL,
     SHIFT_CREATE,
@@ -121,7 +117,6 @@ public enum CommandType implements Serializable {
     SHIFT_CLOSE_DELETE,
     SHIFT_CLOSE_GET_BY_EMPLOYEE_SHIFT,
     SHIFT_CLOSE_GET_TOTAL_REVENUE,
-
 
     JASPERSOFT_EXPORT_ORDER_TO_PDF,
 
@@ -149,7 +144,6 @@ public enum CommandType implements Serializable {
     ROOM_UPDATE,
     ROOM_CREATE,
 
-
     EMPLOYEE_SHIFT_GET_BY_ID,
     EMPLOYEE_SHIFT_GET_ALL,
     EMPLOYEE_SHIFT_CREATE,
@@ -171,6 +165,10 @@ public enum CommandType implements Serializable {
     SURCHARGE_DETAIL_DELETE,
     SURCHARGE_DETAIL_CREATE_LIST,
 
-
+    ROOM_REFRESH,
+    AMENITY_REFRESH,
+    PROMOTION_REFRESH,
+    SURCHARGE_REFRESH,
+    ORDER_REFRESH,
 
 }

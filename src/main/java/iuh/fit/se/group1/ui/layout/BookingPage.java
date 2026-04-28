@@ -45,8 +45,7 @@ public class BookingPage extends JPanel {
     private MainFlow4 mainFlow4;
     private MainFlow5 mainFlow5;
 
-    private static final String[] bookingType = {"Theo giờ", "Theo ngày", "Qua đêm"};
-
+    private static final String[] bookingType = { "Theo giờ", "Theo ngày", "Qua đêm" };
 
     /**
      * Creates new form BookingPage
@@ -67,10 +66,10 @@ public class BookingPage extends JPanel {
         });
 
         mainFlow1.getCbmBookingType().addActionListener(e -> {
-                    mainFlow1.setVisiableTimeBooking(Objects.equals(mainFlow1.getCbmBookingType().getSelectedItem(), bookingType[0]));
-                    mainFlow1.resetInputDate();
-                }
-        );
+            mainFlow1.setVisiableTimeBooking(
+                    Objects.equals(mainFlow1.getCbmBookingType().getSelectedItem(), bookingType[0]));
+            mainFlow1.resetInputDate();
+        });
 
         sequenceBooking.setActiveStep(0);
         mainFlow1.getBtnNext().addActionListener(e -> {
@@ -82,9 +81,7 @@ public class BookingPage extends JPanel {
             }
             sequenceBooking.setActiveStep(1);
             scrollPaneWin111.setViewportView(mainFlow2);
-            SwingUtilities.invokeLater(() ->
-                    scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0))
-            );
+            SwingUtilities.invokeLater(() -> scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0)));
         });
 
         mainFlow2.getBtnPrev().addActionListener(e -> {
@@ -95,11 +92,8 @@ public class BookingPage extends JPanel {
         mainFlow2.getBtnNext().addActionListener(e -> {
             sequenceBooking.setActiveStep(2);
             scrollPaneWin111.setViewportView(mainFlow3);
-            SwingUtilities.invokeLater(() ->
-                    scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0))
-            );
+            SwingUtilities.invokeLater(() -> scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0)));
         });
-
 
         mainFlow3.getBtnPrev().addActionListener(e -> {
             sequenceBooking.setActiveStep(1);
@@ -109,9 +103,7 @@ public class BookingPage extends JPanel {
         mainFlow3.getBtnNext().addActionListener(e -> {
             sequenceBooking.setActiveStep(3);
             scrollPaneWin111.setViewportView(mainFlow4);
-            SwingUtilities.invokeLater(() ->
-                    scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0))
-            );
+            SwingUtilities.invokeLater(() -> scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0)));
         });
 
         mainFlow4.getBtnPrev().addActionListener(e -> {
@@ -128,9 +120,7 @@ public class BookingPage extends JPanel {
             setupInfoStep5();
             sequenceBooking.setActiveStep(4);
             scrollPaneWin111.setViewportView(mainFlow5);
-            SwingUtilities.invokeLater(() ->
-                    scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0))
-            );
+            SwingUtilities.invokeLater(() -> scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0)));
 
         });
 
@@ -145,9 +135,7 @@ public class BookingPage extends JPanel {
             setupInfoStep5();
             sequenceBooking.setActiveStep(4);
             scrollPaneWin111.setViewportView(mainFlow5);
-            SwingUtilities.invokeLater(() ->
-                    scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0))
-            );
+            SwingUtilities.invokeLater(() -> scrollPaneWin111.getViewport().setViewPosition(new Point(0, 0)));
         });
 
         mainFlow5.getBtnPrev().addActionListener(e -> {
@@ -162,7 +150,6 @@ public class BookingPage extends JPanel {
                 throw new RuntimeException(ex);
             }
         });
-
 
         mainFlow1.getTxtCheckInDate().addMouseListener(new MouseAdapter() {
             @Override
@@ -216,8 +203,7 @@ public class BookingPage extends JPanel {
                     "Tạo đơn đặt phòng thất bại: " + response.getMessage(),
                     "Lỗi",
                     CustomDialog.MessageType.ERROR,
-                    400, 200
-            );
+                    400, 200);
             return;
         }
 
@@ -234,8 +220,7 @@ public class BookingPage extends JPanel {
                     "Tạo đơn đặt phòng thành công!",
                     "Thành công",
                     CustomDialog.MessageType.SUCCESS,
-                    400, 200
-            );
+                    400, 200);
             // Reset lại quy trình đặt phòng
             sequenceBooking.setActiveStep(0);
             resetAllInput();
@@ -246,14 +231,13 @@ public class BookingPage extends JPanel {
                     "Tạo đơn đặt phòng thất bại. Vui lòng thử lại.",
                     "Lỗi",
                     CustomDialog.MessageType.ERROR,
-                    400, 200
-            );
+                    400, 200);
         }
 
     }
 
     private void resetAllInput() {
-//         reset 23
+        // reset 23
 
         sequenceBooking.setActiveStep(0);
         mainFlow1.resetInput();
@@ -261,7 +245,7 @@ public class BookingPage extends JPanel {
         mainFlow3.reset();
         mainFlow4.reset();
         mainFlow5.reset();
-//        mainFlow5.resetAllInput();
+        // mainFlow5.resetAllInput();
     }
 
     private void setupInfoStep5() {
@@ -276,11 +260,15 @@ public class BookingPage extends JPanel {
         Response response = null;
         try {
             response = roomService.getAvailableRooms(checkIn, checkOut);
+            System.out.println("Available rooms response: " + response);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         if (response == null || response.getCode() != 200) {
-            JOptionPane.showMessageDialog(null, "Lỗi khi lấy danh sách phòng trống: " + (response != null ? response.getMessage() : "Không có phản hồi từ server"), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi lấy danh sách phòng trống: "
+                            + (response != null ? response.getMessage() : "Không có phản hồi từ server"),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -294,8 +282,7 @@ public class BookingPage extends JPanel {
                 String.valueOf(mainFlow1.getCbmBookingType().getSelectedItem()),
                 selectedRooms,
                 mainFlow2.getLblTotalRoom().getText(),
-                isHoliday(checkIn.toLocalDate(), checkOut.toLocalDate())
-        );
+                isHoliday(checkIn.toLocalDate(), checkOut.toLocalDate()));
 
     }
 
@@ -304,40 +291,40 @@ public class BookingPage extends JPanel {
                 "01-01", // Tết Dương lịch
                 "30-04", // Giải phóng miền Nam
                 "01-05", // Quốc tế Lao động
-                "02-09",  // Quốc khánh
-                "25-12",  // Giáng sinh
-                "24-12",   // Giáng sinh Eve
-                "31-12",    // Năm mới Eve
-                "14-02",    // Valentine
-                "08-03",    // Quốc tế Phụ nữ
-                "20-10",     // Ngày Phụ nữ Việt Nam
-                "20-11",      // Ngày Nhà giáo Việt Nam
-                "01-06"     // Ngày Quốc tế Thiếu nhi
+                "02-09", // Quốc khánh
+                "25-12", // Giáng sinh
+                "24-12", // Giáng sinh Eve
+                "31-12", // Năm mới Eve
+                "14-02", // Valentine
+                "08-03", // Quốc tế Phụ nữ
+                "20-10", // Ngày Phụ nữ Việt Nam
+                "20-11", // Ngày Nhà giáo Việt Nam
+                "01-06" // Ngày Quốc tế Thiếu nhi
         );
 
         LocalDate date = startDate;
         while (!date.isAfter(endDate)) {
             // Kiểm tra ngày dương lịch
             String key = String.format("%02d-%02d", date.getDayOfMonth(), date.getMonthValue());
-            if (FIXED_HOLIDAYS.contains(key)) return true;
+            if (FIXED_HOLIDAYS.contains(key))
+                return true;
 
             // Kiểm tra ngày âm lịch
-//            ChineseDate lunar = new Chin  eseDate(java.sql.Date.valueOf(date));
-//            int lunarDay = lunar.getDay();
-//            int lunarMonth = lunar.getMonth();
-//
-//            // Giỗ Tổ (10/3 AL)
-//            if (lunarMonth == 3 && lunarDay == 10) return true;
-//
-//            // Tết Nguyên Đán (29,30 tháng Chạp + 1–5 tháng Giêng)
-//            if ((lunarMonth == 12 && (lunarDay == 29 || lunarDay == 30)) ||
-//                    (lunarMonth == 1 && lunarDay <= 5)) return true;
+            // ChineseDate lunar = new Chin eseDate(java.sql.Date.valueOf(date));
+            // int lunarDay = lunar.getDay();
+            // int lunarMonth = lunar.getMonth();
+            //
+            // // Giỗ Tổ (10/3 AL)
+            // if (lunarMonth == 3 && lunarDay == 10) return true;
+            //
+            // // Tết Nguyên Đán (29,30 tháng Chạp + 1–5 tháng Giêng)
+            // if ((lunarMonth == 12 && (lunarDay == 29 || lunarDay == 30)) ||
+            // (lunarMonth == 1 && lunarDay <= 5)) return true;
 
             date = date.plusDays(1);
         }
         return false;
     }
-
 
     private boolean findRoom() {
         String checkInStr = mainFlow1.getTxtCheckInDate().getText().trim();
@@ -350,7 +337,6 @@ public class BookingPage extends JPanel {
         // Parse ngày
         LocalDateTime checkIn = LocalDateTime.parse(checkInStr, formatter);
         LocalDateTime checkOut = LocalDateTime.parse(checkOutStr, formatter);
-
 
         String timePlus = "0";
         if (Objects.equals(mainFlow1.getCbmBookingType().getSelectedItem(), bookingType[0])) {
@@ -374,21 +360,23 @@ public class BookingPage extends JPanel {
         }
 
         if (response == null || response.getCode() != 200) {
-            JOptionPane.showMessageDialog(null, "Lỗi khi kiểm tra số lượng phòng trống: " + (response != null ? response.getMessage() : "Không có phản hồi từ server"), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Lỗi khi kiểm tra số lượng phòng trống: "
+                            + (response != null ? response.getMessage() : "Không có phản hồi từ server"),
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // Tìm phòng trống
         AvailableRoomCountResponse availableRooms = (AvailableRoomCountResponse) response.getData();
-//        // Cập nhật danh sách phòng trống lên mainFlow2
+        // // Cập nhật danh sách phòng trống lên mainFlow2
         return mainFlow2.updateRoomList(
                 availableRooms,
                 adults,
                 children,
                 roomService,
                 mainFlow1.getCbmBookingType().getSelectedIndex(),
-                Integer.parseInt(timePlus)
-        );
+                Integer.parseInt(timePlus));
 
     }
 
@@ -406,7 +394,7 @@ public class BookingPage extends JPanel {
             LocalDateTime now = LocalDateTime.now();
 
             // ─────────────────────────────────────────────
-            //            VALIDATION
+            // VALIDATION
             // ─────────────────────────────────────────────
 
             // 1. check-in phải >= hiện tại
@@ -416,11 +404,9 @@ public class BookingPage extends JPanel {
                         "Ngày nhận phòng phải lớn hơn hoặc bằng ngày hiện tại.",
                         "Lỗi nhập liệu",
                         CustomDialog.MessageType.ERROR,
-                        500, 200
-                );
+                        500, 200);
                 return false;
             }
-
 
             // 2. check-out phải > check-in
             if (!checkOut.isAfter(checkIn)) {
@@ -429,8 +415,7 @@ public class BookingPage extends JPanel {
                         "Ngày trả phòng phải sau ngày nhận phòng.",
                         "Lỗi nhập liệu",
                         CustomDialog.MessageType.ERROR,
-                        400, 200
-                );
+                        400, 200);
                 return false;
             }
 
@@ -438,15 +423,15 @@ public class BookingPage extends JPanel {
             int adults;
             try {
                 adults = Integer.parseInt(adultStr);
-                if (adults <= 0) throw new NumberFormatException();
+                if (adults <= 0)
+                    throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 CustomDialog.showMessage(
                         null,
                         "Số người lớn phải là số nguyên dương.",
                         "Lỗi nhập liệu",
                         CustomDialog.MessageType.ERROR,
-                        400, 200
-                );
+                        400, 200);
                 return false;
             }
 
@@ -456,14 +441,12 @@ public class BookingPage extends JPanel {
                     "Ngày tháng không hợp lệ. Vui lòng kiểm tra lại.",
                     "Lỗi nhập liệu",
                     CustomDialog.MessageType.ERROR,
-                    400, 200
-            );
+                    400, 200);
             return false;
         }
 
         return true;
     }
-
 
     private final Consumer<String> overNight = this::handleOverNight;
     private final Consumer<String> dailyCheckIn = this::handleDailyCheckIn;
@@ -507,7 +490,6 @@ public class BookingPage extends JPanel {
         mainFlow1.getTxtCheckOutDate().setText(finalOutDate);
     }
 
-
     private void handleDailyCheckOut(String date) {
         String checkOutDateFormCalender = mainFlow1.getTxtCheckOutDate().getText();
 
@@ -521,15 +503,15 @@ public class BookingPage extends JPanel {
     private void handleDailyCheckIn(String date) {
         String checkInDateFormCalender = mainFlow1.getTxtCheckInDate().getText();
 
-        LocalDate localDate = LocalDate.parse(checkInDateFormCalender.split(" ")[0], DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        LocalDate localDate = LocalDate.parse(checkInDateFormCalender.split(" ")[0],
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         if (localDate.isBefore(LocalDate.now())) {
             CustomDialog.showMessage(this,
                     "Ngày nhận phòng phải là ngày hôm nay hoặc trong tương lai.",
                     "Lỗi chọn ngày",
                     CustomDialog.MessageType.ERROR,
-                    600, 200
-            );
+                    600, 200);
             return;
         }
 
@@ -547,7 +529,8 @@ public class BookingPage extends JPanel {
         // dd/mm/yyyy hh:mm -> dd/mm/yyyy
 
         // ngày checkout sau ngày checkin 1 ngày
-        LocalDate checkOut = LocalDate.parse(checkInDateFormCalender.split(" ")[0], DateTimeFormatter.ofPattern("dd/MM/yyyy")).plusDays(1);
+        LocalDate checkOut = LocalDate
+                .parse(checkInDateFormCalender.split(" ")[0], DateTimeFormatter.ofPattern("dd/MM/yyyy")).plusDays(1);
 
         String checkOutDate = checkOut.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")).concat(" 10:00");
         mainFlow1.getTxtCheckInDate().setText(checkInDate);
@@ -560,7 +543,8 @@ public class BookingPage extends JPanel {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         header = new iuh.fit.se.group1.ui.component.HeaderShift();
@@ -581,22 +565,22 @@ public class BookingPage extends JPanel {
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(sequenceBooking, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(sequenceBooking, GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(scrollPaneWin111, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addComponent(header, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sequenceBooking, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(sequenceBooking, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(scrollPaneWin111, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
-        );
+                                .addComponent(scrollPaneWin111, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
+                                .addContainerGap()));
     }// </editor-fold>//GEN-END:initComponents
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private iuh.fit.se.group1.ui.component.HeaderShift header;

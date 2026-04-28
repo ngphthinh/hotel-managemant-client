@@ -37,7 +37,6 @@ public class RevenueStatistics extends JPanel {
 
                         + "<span style='color:rgb(204,204,204);'> &gt; Doanh thu</span></html>");
 
-
         setActionButtonRange();
 
         loadDataTo7Day();
@@ -53,12 +52,16 @@ public class RevenueStatistics extends JPanel {
         });
     }
 
+    public void loadData() {
+           loadDataTo7Day();
+
+    }
+
     private void loadDataTo7Day() {
         LocalDate today = LocalDate.now();
         LocalDate from = today.minusDays(6); // 7 days including today
         loadData(from, today);
     }
-
 
     private void loadData(LocalDate from, LocalDate to) {
 
@@ -99,7 +102,6 @@ public class RevenueStatistics extends JPanel {
             // Set value for card with growth rate
             card1.setValue(Constants.VND_FORMAT.format(totalRevenue));
 
-
             loadRevenueColumnChart(from, to);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -131,11 +133,10 @@ public class RevenueStatistics extends JPanel {
             loadAdaptiveGroupData(from, to, labels, values, 10);
         }
 
-
         // Validate data
         if (labels.isEmpty() || values.isEmpty()) {
 
-            values.add(new double[]{0, 0});
+            values.add(new double[] { 0, 0 });
         } else {
             // Check if all values are zero
             boolean hasData = false;
@@ -157,16 +158,16 @@ public class RevenueStatistics extends JPanel {
             }
         }
 
-//        revenueColumnChart1.
+        // revenueColumnChart1.
         revenueColumnChart1.setData(labels, values);
         System.out.println("Chart update completed!");
     }
 
-
     /**
      * Load dữ liệu theo ngày (cho khoảng <= 7 ngày)
      */
-    private void loadDailyData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values) throws Exception {
+    private void loadDailyData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values)
+            throws Exception {
         LocalDate current = from;
         while (!current.isAfter(to)) {
             // Format: dd/MM (ví dụ: 21/12)
@@ -180,20 +181,22 @@ public class RevenueStatistics extends JPanel {
             }
 
             RevenueDTO revenueMap = (RevenueDTO) response.getData();
-            double singleRevenue = revenueMap.getRevenueByDate().getOrDefault("Phòng đơn", BigDecimal.ZERO).doubleValue();
-            double doubleRevenue = revenueMap.getRevenueByDate().getOrDefault("Phòng đôi", BigDecimal.ZERO).doubleValue();
+            double singleRevenue = revenueMap.getRevenueByDate().getOrDefault("Phòng đơn", BigDecimal.ZERO)
+                    .doubleValue();
+            double doubleRevenue = revenueMap.getRevenueByDate().getOrDefault("Phòng đôi", BigDecimal.ZERO)
+                    .doubleValue();
 
-            values.add(new double[]{singleRevenue, doubleRevenue});
+            values.add(new double[] { singleRevenue, doubleRevenue });
             current = current.plusDays(1);
         }
     }
-
 
     /**
      * Load dữ liệu theo tuần (cho khoảng 11-70 ngày)
      * Mỗi tuần = 7 ngày, tuần cuối có thể ít hơn
      */
-    private void loadWeeklyData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values) throws Exception {
+    private void loadWeeklyData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values)
+            throws Exception {
         LocalDate current = from;
         int weekNum = 1;
 
@@ -206,8 +209,7 @@ public class RevenueStatistics extends JPanel {
             // Format: "Tuần 1: 01/12-07/12"
             String label = String.format("%s-%s",
                     current.format(DateTimeFormatter.ofPattern("dd/MM")),
-                    weekEnd.format(DateTimeFormatter.ofPattern("dd/MM"))
-            );
+                    weekEnd.format(DateTimeFormatter.ofPattern("dd/MM")));
             labels.add(label);
 
             // Tổng doanh thu trong tuần
@@ -228,7 +230,7 @@ public class RevenueStatistics extends JPanel {
                 day = day.plusDays(1);
             }
 
-            values.add(new double[]{totalSingle, totalDouble});
+            values.add(new double[] { totalSingle, totalDouble });
 
             current = weekEnd.plusDays(1);
             weekNum++;
@@ -241,7 +243,8 @@ public class RevenueStatistics extends JPanel {
      *
      * @param maxColumns Số cột tối đa (mặc định 10)
      */
-    private void loadAdaptiveGroupData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values, int maxColumns) throws Exception {
+    private void loadAdaptiveGroupData(LocalDate from, LocalDate to, List<String> labels, List<double[]> values,
+            int maxColumns) throws Exception {
         long totalDays = ChronoUnit.DAYS.between(from, to) + 1;
 
         // Tính số ngày mỗi nhóm để có đúng số cột mong muốn
@@ -262,14 +265,12 @@ public class RevenueStatistics extends JPanel {
                 // Nếu nhóm ngắn, hiển thị ngày đầu-cuối
                 label = String.format("%s-%s",
                         current.format(DateTimeFormatter.ofPattern("dd/MM")),
-                        groupEnd.format(DateTimeFormatter.ofPattern("dd/MM"))
-                );
+                        groupEnd.format(DateTimeFormatter.ofPattern("dd/MM")));
             } else if (groupSize <= 31) {
                 // Nếu nhóm ~1 tháng, hiển thị tuần hoặc khoảng ngày
                 label = String.format("%s-%s",
                         current.format(DateTimeFormatter.ofPattern("dd/MM")),
-                        groupEnd.format(DateTimeFormatter.ofPattern("dd/MM"))
-                );
+                        groupEnd.format(DateTimeFormatter.ofPattern("dd/MM")));
             } else {
                 // Nếu nhóm dài, chỉ hiển thị tháng/năm
                 if (current.getMonthValue() == groupEnd.getMonthValue()) {
@@ -277,8 +278,7 @@ public class RevenueStatistics extends JPanel {
                 } else {
                     label = String.format("%s-%s",
                             current.format(DateTimeFormatter.ofPattern("MM/yy")),
-                            groupEnd.format(DateTimeFormatter.ofPattern("MM/yy"))
-                    );
+                            groupEnd.format(DateTimeFormatter.ofPattern("MM/yy")));
                 }
             }
             labels.add(label);
@@ -301,13 +301,12 @@ public class RevenueStatistics extends JPanel {
                 day = day.plusDays(1);
             }
 
-            values.add(new double[]{totalSingle, totalDouble});
+            values.add(new double[] { totalSingle, totalDouble });
 
             current = groupEnd.plusDays(1);
             groupNum++;
         }
     }
-
 
     public LocalDate parseDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -356,7 +355,8 @@ public class RevenueStatistics extends JPanel {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         revenueColumnChart1 = new iuh.fit.se.group1.ui.component.chart.RevenueColumnChart();
@@ -373,26 +373,32 @@ public class RevenueStatistics extends JPanel {
                         .addGroup(layout.createSequentialGroup()
                                 .addGap(123, 123, 123)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(revenueColumnChart1, GroupLayout.PREFERRED_SIZE, 969, GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(revenueColumnChart1, GroupLayout.PREFERRED_SIZE, 969,
+                                                GroupLayout.PREFERRED_SIZE)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(card1, GroupLayout.PREFERRED_SIZE, 592, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(card1, GroupLayout.PREFERRED_SIZE, 592,
+                                                        GroupLayout.PREFERRED_SIZE)
                                                 .addGap(37, 37, 37)
-                                                .addComponent(rangeDateButton1, GroupLayout.PREFERRED_SIZE, 381, GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(rangeDateButton1, GroupLayout.PREFERRED_SIZE, 381,
+                                                        GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(67, Short.MAX_VALUE))
-                        .addComponent(headerChart1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+                        .addComponent(headerChart1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(headerChart1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(headerChart1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(card1, GroupLayout.PREFERRED_SIZE, 162, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(rangeDateButton1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(card1, GroupLayout.PREFERRED_SIZE, 162,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(rangeDateButton1, GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
-                                .addComponent(revenueColumnChart1, GroupLayout.PREFERRED_SIZE, 429, GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62))
-        );
+                                .addComponent(revenueColumnChart1, GroupLayout.PREFERRED_SIZE, 429,
+                                        GroupLayout.PREFERRED_SIZE)
+                                .addGap(62, 62, 62)));
     }// </editor-fold>//GEN-END:initComponents
 
     public static void main(String[] args) {

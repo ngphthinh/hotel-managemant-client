@@ -3,6 +3,7 @@ package iuh.fit.se.group1.ui.layout;
 import iuh.fit.se.group1.dto.RoomTypeDTO;
 import iuh.fit.se.group1.dto.RoomViewDTO;
 import iuh.fit.se.group1.enums.RoomStatus;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.ImportExportExcelServiceClient;
@@ -16,6 +17,7 @@ import iuh.fit.se.group1.ui.component.modal.RoomManagementModal;
 import iuh.fit.se.group1.ui.component.table.TableActionEvent;
 import iuh.fit.se.group1.util.Constants;
 import iuh.fit.se.group1.util.ExportUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 import raven.glasspanepopup.GlassPanePopup;
@@ -38,6 +40,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 public class RoomManagement extends JPanel {
 
     private RoomServiceClient roomService;
@@ -55,11 +58,17 @@ public class RoomManagement extends JPanel {
     private JTextField txtSingleFirstHour, txtDoubleFirstHour;
     private static final int GET_ALL = 0;
     private static final int GET_BY_KEYWORD = 1;
+    private boolean subscribed = false;
 
     public RoomManagement() {
         initServices();
         initComponents();
-
+        if (!subscribed) {
+            ClientEventBus.roomEventBus.subscribe(response -> {
+                SwingUtilities.invokeLater(this::reloadRoomTable);
+            });
+            subscribed = true;
+        }
         loadTable(fetchData(GET_ALL, null));
         try {
             loadPricesFromFile();
@@ -68,6 +77,11 @@ public class RoomManagement extends JPanel {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void reloadRoomTable() {
+        System.out.println("Received room update event, reloading table...");
+        loadTable(fetchData(GET_ALL, null));
     }
 
     private List<RoomViewDTO> fetchData(int type, String filter) {

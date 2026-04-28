@@ -3,6 +3,7 @@ package iuh.fit.se.group1.ui.layout;
 import iuh.fit.se.group1.dto.EmployeeDTO;
 import iuh.fit.se.group1.dto.EmployeeShiftDTO;
 import iuh.fit.se.group1.dto.ShiftCloseDTO;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.EmployeeShiftServiceClient;
@@ -44,10 +45,13 @@ public class MainLayout extends JPanel {
     private RoomToolsManagement roomToolsManagement;
     private OrderManagement orderManagement;
     private CheckForVersionPanel checkForVersionPanel;
-    private RevenueStatistics revenueStatistics;
     private SurchargeManagement surchargeManagement;
     private CloseShift closeShift;
     private Runnable logoutCallback;
+    private RevenueStatistics revenueStatistics;
+    private BookingTrend bookingTrend;
+
+    private boolean subscribedOrder = false;
 
     private float alpha = 1f;
     private SideBar sideBar;
@@ -57,6 +61,26 @@ public class MainLayout extends JPanel {
     public MainLayout() {
         init();
         setOpaque(false);
+        if (!subscribedOrder) {
+            ClientEventBus.surchargeEventBus.subscribe(response -> {
+                SwingUtilities.invokeLater(this::refreshData);
+            });
+            subscribedOrder = true;
+        }
+    }
+
+    public void refreshData() {
+        paymentPage.setOnPayment();
+        orderManagement.loadData();
+        roomToolsManagement.loadData();
+        if (isAdmin) {
+            dashboard.refreshData();
+            roomManagement.loadData();
+            revenueStatistics.loadData();
+            bookingTrend.loadData();
+        } else {
+            dashboardEmployee.reloadDashboardData();
+        }
     }
 
     public void setAlpha(float alpha) {
@@ -95,6 +119,7 @@ public class MainLayout extends JPanel {
                 if (isAdmin) {
                     if (index == 0) {
                         setMainContent(dashboard);
+                        dashboard.refreshData();
                     } else if (index == 1) {
                         setMainContent(bookingPage);
                     } else if (index == 2) {
@@ -125,22 +150,21 @@ public class MainLayout extends JPanel {
                     } else if (index == 10) {
                         setMainContent(surchargeManagement);
                     } else if (index == 11 && subIndex == 1) {
-                        setMainContent(new RevenueStatistics());
+                        setMainContent(revenueStatistics);
                     } else if (index == 11 && subIndex == 2) {
-                        setMainContent(new BookingTrend());
+                        setMainContent(bookingTrend);
                     } else if (index == 12 && subIndex == 1) {
                         handleGuidePanel();
                     } else if (index == 12 && subIndex == 2) {
                         setMainContent(new Regulation());
                     } else if (index == 12 && subIndex == 3) {
                         GlassPanePopup.showPopup(checkForVersionPanel);
-                        checkForVersionPanel.getBtnClose().addActionListener(e
-                                -> GlassPanePopup.closePopupLast()
-                        );
+                        checkForVersionPanel.getBtnClose().addActionListener(e -> GlassPanePopup.closePopupLast());
                     } else if (index == 12 && subIndex == 4) {
                         handleAboutPanel();
                     } else {
-                        System.out.println("Selected Menu Item: " + index + ", SubItem: " + subIndex + " from MenuIcon");
+                        System.out
+                                .println("Selected Menu Item: " + index + ", SubItem: " + subIndex + " from MenuIcon");
                     }
                 } else {
                     if (index == 0) {
@@ -167,19 +191,17 @@ public class MainLayout extends JPanel {
                         } else if (subIndex == 3) {
 
                             GlassPanePopup.showPopup(checkForVersionPanel);
-                            checkForVersionPanel.getBtnClose().addActionListener(e
-                                    -> GlassPanePopup.closePopupLast()
-                            );
+                            checkForVersionPanel.getBtnClose().addActionListener(e -> GlassPanePopup.closePopupLast());
                         } else if (subIndex == 4) {
                             handleAboutPanel();
                         }
                     } else {
-                        System.out.println("Selected Menu Item: " + index + ", SubItem: " + subIndex + " from MenuIcon");
+                        System.out
+                                .println("Selected Menu Item: " + index + ", SubItem: " + subIndex + " from MenuIcon");
                     }
                 }
             }
         });
-
 
         sideBar.getLblAvt().addMouseListener(new MouseAdapter() {
             @Override
@@ -226,7 +248,7 @@ public class MainLayout extends JPanel {
         EmployeeShiftServiceClient employeeShiftService = SocketFacade.getInstance().getEmployeeShift();
         ShiftCloseServiceClient shiftCloseService = SocketFacade.getInstance().getShiftClose();
 
-        //  THỜI GIAN DƯ SAU KHI KẾT THÚC CA (10 phút)
+        // THỜI GIAN DƯ SAU KHI KẾT THÚC CA (10 phút)
         final int BUFFER_MINUTES = 10;
 
         // LẤY TẤT CẢ CA TRONG NGÀY HÔM NAY
@@ -235,8 +257,7 @@ public class MainLayout extends JPanel {
         try {
             response = employeeShiftService.getShiftsByEmployeeAndDate(
                     currentEmployee.getEmployeeId(),
-                    LocalDate.now()
-            );
+                    LocalDate.now());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -256,8 +277,7 @@ public class MainLayout extends JPanel {
             return;
         }
 
-
-        //  LỌC RA CÁC CA CHƯA ĐÓNG
+        // LỌC RA CÁC CA CHƯA ĐÓNG
         List<EmployeeShiftDTO> openShifts = todayShifts.stream()
                 .filter(shift -> {
                     Response res = null;
@@ -310,14 +330,16 @@ public class MainLayout extends JPanel {
                         isOverdue = false;
                     } else {
                         java.time.LocalTime endTimeWithBuffer = endTime.plusMinutes(BUFFER_MINUTES);
-                        isBeforeBufferEnd = currentTime.isBefore(endTimeWithBuffer) || currentTime.equals(endTimeWithBuffer);
+                        isBeforeBufferEnd = currentTime.isBefore(endTimeWithBuffer)
+                                || currentTime.equals(endTimeWithBuffer);
                         isOverdue = currentTime.isAfter(endTimeWithBuffer);
                     }
                 } else {
                     // Ca ngày: logic bình thường
                     java.time.LocalTime endTimeWithBuffer = endTime.plusMinutes(BUFFER_MINUTES);
                     isAfterStart = currentTime.isAfter(startTime) || currentTime.equals(startTime);
-                    isBeforeBufferEnd = currentTime.isBefore(endTimeWithBuffer) || currentTime.equals(endTimeWithBuffer);
+                    isBeforeBufferEnd = currentTime.isBefore(endTimeWithBuffer)
+                            || currentTime.equals(endTimeWithBuffer);
                     isOverdue = currentTime.isAfter(endTimeWithBuffer);
                 }
 
@@ -347,7 +369,6 @@ public class MainLayout extends JPanel {
             }
         }
 
-
         if (shiftToClose != null) {
             // Kiểm tra xem có ca quá hạn không
             if (overdueShift != null) {
@@ -364,16 +385,18 @@ public class MainLayout extends JPanel {
                         "<html><b style='color:red;'>CẢNH BÁO: Có ca làm việc chưa đóng!</b><br><br>" +
                                 "Ca chưa đóng: <b>" + overdueShiftName + "</b> (" + overdueShiftTime + ")<br>" +
                                 "Thời gian đóng ca đã hết từ: " +
-                                java.time.LocalTime.parse(overdueShift.getShift().getEndTime()).plusMinutes(BUFFER_MINUTES) + "<br><br>" +
-                                "Ca hiện tại có thể đóng: <b>" + currentShiftName + "</b> (" + currentShiftTime + ")<br><br>" +
+                                java.time.LocalTime.parse(overdueShift.getShift().getEndTime())
+                                        .plusMinutes(BUFFER_MINUTES)
+                                + "<br><br>" +
+                                "Ca hiện tại có thể đóng: <b>" + currentShiftName + "</b> (" + currentShiftTime
+                                + ")<br><br>" +
                                 "<b>Bạn muốn đóng ca nào?</b></html>",
                         "Cảnh báo",
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.WARNING_MESSAGE,
                         null,
-                        new Object[]{"Đóng ca cũ", "Đóng ca hiện tại", "Hủy"},
-                        "Đóng ca cũ"
-                );
+                        new Object[] { "Đóng ca cũ", "Đóng ca hiện tại", "Hủy" },
+                        "Đóng ca cũ");
 
                 if (choice == JOptionPane.YES_OPTION) {
                     // Đóng ca cũ (ca quá hạn)
@@ -393,7 +416,8 @@ public class MainLayout extends JPanel {
                     if (isInBufferTime) {
                         long minutesRemaining = java.time.Duration.between(currentTime,
                                 endTime.plusMinutes(BUFFER_MINUTES)).toMinutes();
-                        System.out.println("Đang trong thời gian buffer. Còn " + minutesRemaining + " phút để đóng ca.");
+                        System.out
+                                .println("Đang trong thời gian buffer. Còn " + minutesRemaining + " phút để đóng ca.");
                     }
                 } catch (Exception e) {
                     System.err.println("Lỗi tính buffer time: " + e.getMessage());
@@ -409,12 +433,11 @@ public class MainLayout extends JPanel {
 
             try {
                 java.time.LocalTime oldestEndTime = java.time.LocalTime.parse(
-                        oldestOpenShift.getShift().getEndTime()
-                );
+                        oldestOpenShift.getShift().getEndTime());
                 java.time.LocalTime oldestEndTimeWithBuffer = oldestEndTime.plusMinutes(BUFFER_MINUTES);
 
                 if (currentTime.isAfter(oldestEndTimeWithBuffer)) {
-                    //  CÓ CA QUÁ HẠN BUFFER TIME
+                    // CÓ CA QUÁ HẠN BUFFER TIME
                     String oldShiftName = oldestOpenShift.getShift().getName();
                     String oldShiftTime = oldestOpenShift.getShift().getStartTime() + " - " +
                             oldestOpenShift.getShift().getEndTime();
@@ -422,10 +445,11 @@ public class MainLayout extends JPanel {
                     Message.showMessage("Cảnh báo",
                             "<html><b style='color:red;'>Ca làm việc đã quá hạn đóng ca!</b><br><br>" +
                                     "Ca: <b>" + oldShiftName + "</b> (" + oldShiftTime + ")<br>" +
-                                    "Thời gian cho phép đóng ca: đến " + oldestEndTimeWithBuffer.toString() + "<br><br>" +
+                                    "Thời gian cho phép đóng ca: đến " + oldestEndTimeWithBuffer.toString() + "<br><br>"
+                                    +
                                     "Vui lòng liên hệ quản lý để xử lý.</html>");
                 } else {
-                    //  CHƯA ĐẾN GIỜ LÀM CA
+                    // CHƯA ĐẾN GIỜ LÀM CA
                     EmployeeShiftDTO nextShift = openShifts.get(0);
                     String nextShiftName = nextShift.getShift().getName();
                     String nextShiftTime = nextShift.getShift().getStartTime() + " - " +
@@ -481,7 +505,6 @@ public class MainLayout extends JPanel {
         }
     }
 
-
     public void setAuth(boolean isAdmin) {
         this.isAdmin = isAdmin;
         sideBar.getMenu1().setAuth(isAdmin);
@@ -502,6 +525,7 @@ public class MainLayout extends JPanel {
             orderManagement = new OrderManagement();
             checkForVersionPanel = new CheckForVersionPanel();
             revenueStatistics = new RevenueStatistics();
+            bookingTrend = new BookingTrend();
             surchargeManagement = new SurchargeManagement();
             setMainContent(dashboard);
         } else {
@@ -515,7 +539,6 @@ public class MainLayout extends JPanel {
             bookingPage.setCurrentEmployee(currentEmployee);
             setMainContent(dashboardEmployee);
             checkForVersionPanel = new CheckForVersionPanel();
-            revenueStatistics = new RevenueStatistics();
             surchargeManagement = new SurchargeManagement();
         }
 

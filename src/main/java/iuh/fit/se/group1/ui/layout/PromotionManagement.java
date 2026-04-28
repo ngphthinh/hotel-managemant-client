@@ -5,6 +5,7 @@
 package iuh.fit.se.group1.ui.layout;
 
 import iuh.fit.se.group1.dto.PromotionDTO;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.ImportExportExcelServiceClient;
@@ -43,6 +44,8 @@ public class PromotionManagement extends JPanel {
     private static final int GET_ALL = 0;
     private static final int GET_BY_KEYWORD = 1;
 
+    private boolean subscribed = false;
+
     /**
      * Creates new form PromotionManagement
      */
@@ -50,6 +53,19 @@ public class PromotionManagement extends JPanel {
         initComponents();
         custom();
         promotionService = SocketFacade.getInstance().getPromotion();
+        loadTable(fetchData(GET_ALL, null));
+
+        if (!subscribed) {
+            ClientEventBus.roomEventBus.subscribe(response -> {
+                SwingUtilities.invokeLater(this::reloadRoomTable);
+            });
+            subscribed = true;
+        }
+
+    }
+
+    private void reloadRoomTable() {
+        System.out.println("Received room update event, reloading promotion table...");
         loadTable(fetchData(GET_ALL, null));
     }
 
@@ -72,7 +88,6 @@ public class PromotionManagement extends JPanel {
         }
     }
 
-
     public void loadData() {
         loadTable(fetchData(GET_ALL, null));
     }
@@ -81,7 +96,7 @@ public class PromotionManagement extends JPanel {
         DefaultTableModel model = (DefaultTableModel) tblPromotion.getTbl().getModel();
         model.setRowCount(0);
         for (PromotionDTO promotion : promotions) {
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                     promotion.getPromotionId(),
                     promotion.getPromotionName(),
                     Constants.VND_FORMAT.format(promotion.getMinOrderAmount()),
@@ -115,7 +130,9 @@ public class PromotionManagement extends JPanel {
 
                     Response response = importService.importPromotionsFromExcel(file);
                     if (response == null || response.getCode() != 200) {
-                        JOptionPane.showMessageDialog(this, "Lỗi khi import file: " + (response != null ? response.getMessage() : "Không nhận được phản hồi từ server"), "Lỗi import Excel", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Lỗi khi import file: "
+                                + (response != null ? response.getMessage() : "Không nhận được phản hồi từ server"),
+                                "Lỗi import Excel", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -129,7 +146,8 @@ public class PromotionManagement extends JPanel {
                     }
                 }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi import file: " + e.getMessage(), "Lỗi import Excel", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Lỗi khi import file: " + e.getMessage(), "Lỗi import Excel",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
         });
@@ -201,7 +219,10 @@ public class PromotionManagement extends JPanel {
                     Long id = (Long) model.getValueAt(row, 0);
                     Response response = promotionService.getPromotionById(id);
                     if (response == null || response.getCode() != 200) {
-                        JOptionPane.showMessageDialog(PromotionManagement.this, "Server returned HTTP Status " + response.getCode() + "nMessage: " + response.getMessage(), "Lỗi lấy thông tin khuyến mãi", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(PromotionManagement.this,
+                                "Server returned HTTP Status " + response.getCode() + "nMessage: "
+                                        + response.getMessage(),
+                                "Lỗi lấy thông tin khuyến mãi", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     PromotionDTO promotionFind = (PromotionDTO) response.getData();
@@ -243,7 +264,10 @@ public class PromotionManagement extends JPanel {
                             }
 
                             if (res == null || res.getCode() != 200) {
-                                JOptionPane.showMessageDialog(PromotionManagement.this, "Server returned HTTP Status " + (res != null ? res.getCode() : "No response") + "nMessage: " + (res != null ? res.getMessage() : "No response"), "Lỗi cập nhật khuyến mãi", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(PromotionManagement.this,
+                                        "Server returned HTTP Status " + (res != null ? res.getCode() : "No response")
+                                                + "nMessage: " + (res != null ? res.getMessage() : "No response"),
+                                        "Lỗi cập nhật khuyến mãi", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
 
@@ -254,7 +278,6 @@ public class PromotionManagement extends JPanel {
                                 return;
                             }
                             loadData();
-
 
                             // Cột 6 là createdAt - không cập nhật
                             // Cột 7 là action column
@@ -289,7 +312,11 @@ public class PromotionManagement extends JPanel {
                         try {
                             Response response = promotionService.deletePromotion(id);
                             if (response == null || response.getCode() != 200) {
-                                JOptionPane.showMessageDialog(PromotionManagement.this, "Server returned HTTP Status " + (response != null ? response.getCode() : "No response") + "nMessage: " + (response != null ? response.getMessage() : "No response"), "Lỗi xóa khuyến mãi", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(PromotionManagement.this,
+                                        "Server returned HTTP Status "
+                                                + (response != null ? response.getCode() : "No response") + "nMessage: "
+                                                + (response != null ? response.getMessage() : "No response"),
+                                        "Lỗi xóa khuyến mãi", JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
 
@@ -358,7 +385,7 @@ public class PromotionManagement extends JPanel {
      * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">
     private void initComponents() {
 
         headerCustom1 = new iuh.fit.se.group1.ui.component.HeaderCustom();
@@ -399,36 +426,41 @@ public class PromotionManagement extends JPanel {
                                 .addGap(36, 36, 36)
                                 .addComponent(lblTitle)
                                 .addGap(307, 307, 307)
-                                .addComponent(btnAddPromotion, GroupLayout.PREFERRED_SIZE, 178, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAddPromotion, GroupLayout.PREFERRED_SIZE, 178,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(headerCustom1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(headerCustom1, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(tblPromotion, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addContainerGap())
-        );
+                                .addComponent(tblPromotion, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
+                                .addContainerGap()));
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(headerCustom1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(headerCustom1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addGap(30, 30, 30)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                                         .addComponent(lblTitle)
                                         .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                .addComponent(btnAddPromotion, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)))
+                                                .addComponent(btnAddPromotion, GroupLayout.PREFERRED_SIZE, 45,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 43,
+                                                        GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 43,
+                                                        GroupLayout.PREFERRED_SIZE)))
                                 .addGap(25, 25, 25)
                                 .addComponent(tblPromotion, GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE)
-                                .addGap(31, 31, 31))
-        );
+                                .addGap(31, 31, 31)));
     }
 
-    private void btnAddPromotionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddPromotionActionPerformed
+    private void btnAddPromotionActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnAddPromotionActionPerformed
         InfoPromotionModal modal = new InfoPromotionModal();
 
         modal.closeModel(ae -> GlassPanePopup.closePopupLast());
@@ -459,7 +491,10 @@ public class PromotionManagement extends JPanel {
             Response response = promotionService.createPromotion(promotion);
 
             if (response == null || response.getCode() != 200) {
-                JOptionPane.showMessageDialog(PromotionManagement.this, "Server returned HTTP Status " + (response != null ? response.getCode() : "No response") + "nMessage: " + (response != null ? response.getMessage() : "No response"), "Lỗi thêm khuyến mãi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(PromotionManagement.this,
+                        "Server returned HTTP Status " + (response != null ? response.getCode() : "No response")
+                                + "nMessage: " + (response != null ? response.getMessage() : "No response"),
+                        "Lỗi thêm khuyến mãi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -472,7 +507,7 @@ public class PromotionManagement extends JPanel {
 
             System.out.println("Khuyến mãi đã lưu: " + entitySave);
             DefaultTableModel model = (DefaultTableModel) tblPromotion.getTbl().getModel();
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                     entitySave.getPromotionId(),
                     entitySave.getPromotionName(),
                     Constants.VND_FORMAT.format(entitySave.getMinOrderAmount()),
@@ -609,12 +644,12 @@ public class PromotionManagement extends JPanel {
     }
 
     private record Valid(String name,
-                         boolean valid,
-                         BigDecimal discountPrice,
-                         float discountPercent,
-                         String description,
-                         LocalDate startDate,
-                         LocalDate endDate) {
+            boolean valid,
+            BigDecimal discountPrice,
+            float discountPercent,
+            String description,
+            LocalDate startDate,
+            LocalDate endDate) {
 
     }
 

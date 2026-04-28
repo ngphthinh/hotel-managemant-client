@@ -5,6 +5,7 @@
 package iuh.fit.se.group1.ui.layout;
 
 import iuh.fit.se.group1.dto.AmenityDTO;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.AmenityServiceClient;
@@ -35,7 +36,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-
 /**
  * @author THIS PC
  */
@@ -46,6 +46,7 @@ public class AmenityManagement extends JPanel {
     private final AmenityServiceClient amenityService;
     private static final int GET_ALL = 0;
     private static final int GET_BY_KEYWORD = 1;
+    private boolean subscribed = false;
 
     /**
      * Creates new form AmenityManagement
@@ -56,7 +57,7 @@ public class AmenityManagement extends JPanel {
 
         socketFacade = SocketFacade.getInstance();
         amenityService = socketFacade.getAmenity();
-//        amenityService = new AmenityService();
+        // amenityService = new AmenityService();
 
         try {
 
@@ -66,7 +67,25 @@ public class AmenityManagement extends JPanel {
                 return;
             }
 
+            loadTable((List<AmenityDTO>) response.getData());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        if (!subscribed) {
+            ClientEventBus.roomEventBus.subscribe(response -> {
+                SwingUtilities.invokeLater(this::reloadRoomTable);
+            });
+            subscribed = true;
+        }
+    }
 
+    public void reloadRoomTable() {
+        try {
+            Response response = amenityService.getAllAmenities();
+            if (response.getCode() != 200) {
+                JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + response.getCode());
+                return;
+            }
             loadTable((List<AmenityDTO>) response.getData());
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -77,7 +96,8 @@ public class AmenityManagement extends JPanel {
         DefaultTableModel model = (DefaultTableModel) tblAmenity.getTbl().getModel();
         model.setRowCount(0);
         for (AmenityDTO amenity : amenities) {
-            model.addRow(new Object[]{amenity.getAmenityId(), amenity.getNameAmenity(), Constants.VND_FORMAT.format(amenity.getPrice())});
+            model.addRow(new Object[] { amenity.getAmenityId(), amenity.getNameAmenity(),
+                    Constants.VND_FORMAT.format(amenity.getPrice()) });
         }
     }
 
@@ -108,15 +128,14 @@ public class AmenityManagement extends JPanel {
                     Response response = importService.importAmenitiesFromExcel(file);
 
                     if (response.getCode() != 200) {
-                        JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + response.getCode() + ": " + response.getMessage());
+                        JOptionPane.showMessageDialog(this,
+                                "Server returned HTTP Status " + response.getCode() + ": " + response.getMessage());
                         return;
                     }
 
                     List<AmenityDTO> imported = (List<AmenityDTO>) response.getData();
 
-
                     if (imported != null && !imported.isEmpty()) {
-
 
                         response = amenityService.getAllAmenities();
                         if (response.getCode() != 200) {
@@ -124,11 +143,9 @@ public class AmenityManagement extends JPanel {
                             return;
                         }
 
-
                         List<AmenityDTO> allAmenities = (List<AmenityDTO>) response.getData();
                         allAmenities.addAll(imported);
                         loadTable(allAmenities);
-
 
                         Message.showInfo("Thành công", "Đã import " + imported.size() + " dịch vụ từ Excel!");
                     } else {
@@ -144,7 +161,7 @@ public class AmenityManagement extends JPanel {
         btnImport.setIcon(FontIcon.of(FontAwesomeSolid.FILE_IMPORT, 17, Color.WHITE), SwingConstants.RIGHT);
         btnExport.setIcon(FontIcon.of(FontAwesomeSolid.FILE_EXPORT, 17, Color.WHITE), SwingConstants.RIGHT);
 
-        String cols[] = {"Mã dịch vụ", "Tên dịch vụ", "Giá dịch vụ", "Chức năng"};
+        String cols[] = { "Mã dịch vụ", "Tên dịch vụ", "Giá dịch vụ", "Chức năng" };
         DefaultTableModel model = new DefaultTableModel(cols, 0);
         tblAmenity.getTbl().setModel(model);
         TableActionEvent event = new TableActionEvent() {
@@ -178,9 +195,9 @@ public class AmenityManagement extends JPanel {
                                     .price(result.price())
                                     .build());
 
-
                             if (response.getCode() != 200) {
-                                JOptionPane.showMessageDialog(null, response.getMessage(), "Lỗi cập nhật dịch vụ", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, response.getMessage(), "Lỗi cập nhật dịch vụ",
+                                        JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
 
@@ -193,7 +210,6 @@ public class AmenityManagement extends JPanel {
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
-
 
                     });
                 });
@@ -227,13 +243,13 @@ public class AmenityManagement extends JPanel {
                         try {
                             Response response = amenityService.deleteAmenity(id);
                             if (response.getCode() != 200) {
-                                JOptionPane.showMessageDialog(null, response.getMessage(), "Lỗi xóa dịch vụ", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(null, response.getMessage(), "Lỗi xóa dịch vụ",
+                                        JOptionPane.ERROR_MESSAGE);
                                 return;
                             }
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
-
 
                     }
                 });
@@ -241,7 +257,7 @@ public class AmenityManagement extends JPanel {
 
         };
         tblAmenity.setTableActionColumn(tblAmenity.getTbl(), 3, event, false);
-        tblAmenity.getTbl().getColumnModel().getColumn(0).setPreferredWidth(200);  // chiều rộng mong muốn
+        tblAmenity.getTbl().getColumnModel().getColumn(0).setPreferredWidth(200); // chiều rộng mong muốn
         tblAmenity.getTbl().getColumnModel().getColumn(1).setPreferredWidth(300);
         tblAmenity.getTbl().getColumnModel().getColumn(2).setPreferredWidth(200);
         tblAmenity.getTbl().getColumnModel().getColumn(3).setPreferredWidth(80);
@@ -302,7 +318,6 @@ public class AmenityManagement extends JPanel {
                 response = amenityService.getAllAmenities();
             }
 
-
             if (response.getCode() != 200) {
                 JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + response.getCode());
                 return;
@@ -314,7 +329,8 @@ public class AmenityManagement extends JPanel {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated
+    // Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         lblTiTle = new JLabel();
@@ -361,40 +377,44 @@ public class AmenityManagement extends JPanel {
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(tblAmenity, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(tblAmenity, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        Short.MAX_VALUE)
                                 .addContainerGap())
                         .addComponent(headerCustom, GroupLayout.DEFAULT_SIZE, 1227, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                                 .addGap(36, 36, 36)
                                 .addComponent(lblTiTle, GroupLayout.PREFERRED_SIZE, 262, GroupLayout.PREFERRED_SIZE)
                                 .addGap(372, 372, 372)
-                                .addComponent(btnAddAmenity, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnAddAmenity, GroupLayout.PREFERRED_SIZE, 148,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addGap(12, 12, 12)
                                 .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(headerCustom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                .addComponent(headerCustom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                        GroupLayout.PREFERRED_SIZE)
                                 .addGap(30, 30, 30)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(btnAddAmenity, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(lblTiTle, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 43, GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(btnAddAmenity, GroupLayout.PREFERRED_SIZE, 43,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(lblTiTle, GroupLayout.PREFERRED_SIZE, 43,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnExport, GroupLayout.PREFERRED_SIZE, 43,
+                                                GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnImport, GroupLayout.PREFERRED_SIZE, 43,
+                                                GroupLayout.PREFERRED_SIZE))
                                 .addGap(25, 25, 25)
                                 .addComponent(tblAmenity, GroupLayout.PREFERRED_SIZE, 571, GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(67, Short.MAX_VALUE))
-        );
+                                .addContainerGap(67, Short.MAX_VALUE)));
 
         btnExport.getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
 
-
-    private void btnAddAmenityActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnAddAmenityActionPerformed
+    private void btnAddAmenityActionPerformed(ActionEvent evt) {// GEN-FIRST:event_btnAddAmenityActionPerformed
 
         ServiceModal modal = new ServiceModal();
         modal.closeModel(new ActionListener() {
@@ -411,7 +431,7 @@ public class AmenityManagement extends JPanel {
             }
         });
         GlassPanePopup.showPopup(modal);
-    }//GEN-LAST:event_btnAddAmenityActionPerformed
+    }// GEN-LAST:event_btnAddAmenityActionPerformed
 
     private void saveData(ServiceModal modal) {
         Valid result = getValid(modal);
@@ -423,9 +443,9 @@ public class AmenityManagement extends JPanel {
                         .price(result.price())
                         .build());
 
-
                 if (response.getCode() != 200) {
-                    JOptionPane.showMessageDialog(this, response.getMessage(), "Lỗi thêm dịch vụ", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, response.getMessage(), "Lỗi thêm dịch vụ",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -435,7 +455,8 @@ public class AmenityManagement extends JPanel {
                     return;
                 }
                 DefaultTableModel model = (DefaultTableModel) tblAmenity.getTbl().getModel();
-                model.addRow(new Object[]{entitySave.getAmenityId(), entitySave.getNameAmenity(), Constants.VND_FORMAT.format(entitySave.getPrice())});
+                model.addRow(new Object[] { entitySave.getAmenityId(), entitySave.getNameAmenity(),
+                        Constants.VND_FORMAT.format(entitySave.getPrice()) });
                 GlassPanePopup.closePopupLast();
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -488,11 +509,9 @@ public class AmenityManagement extends JPanel {
 
     }
 
-    private void btnExportActionPerformed(ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
-
+    private void btnExportActionPerformed(ActionEvent evt) {// GEN-FIRST:event_btnExportActionPerformed
 
         try {
-
 
             byte[] data = ExportUtil.exportTableToExcel(tblAmenity.getTbl(), "Danh sách dịch vụ", true);
 
@@ -524,8 +543,7 @@ public class AmenityManagement extends JPanel {
         } catch (Exception ex) {
             Message.showMessage("Lỗi", ex.getMessage());
         }
-    }//GEN-LAST:event_btnExportActionPerformed
-
+    }// GEN-LAST:event_btnExportActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private iuh.fit.se.group1.ui.component.custom.Button btnAddAmenity;
