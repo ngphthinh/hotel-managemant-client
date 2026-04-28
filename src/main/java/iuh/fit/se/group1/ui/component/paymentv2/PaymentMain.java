@@ -1147,7 +1147,7 @@ public class PaymentMain extends JPanel {
         // Refresh currentOrder from DB to ensure consistent state (optional)
 
         response = orderService.getOrderById(currentOrder.getOrderId());
-        if (response == null ||response.getCode() != 200 ) {
+        if (response == null || response.getCode() != 200) {
             JOptionPane.showMessageDialog(this,
                     "Lỗi khi tải lại đơn hàng sau khi cập nhật. Vui lòng thử lại.",
                     "Lỗi",
@@ -1407,7 +1407,7 @@ public class PaymentMain extends JPanel {
         setupCustomer(order.getCustomer());
 
         response = orderDetailService.getOrderDetailsByOrderId(orderId);
-        if (response == null || response.getCode() != 200) {
+        if (response == null) {
             JOptionPane.showMessageDialog(null, "Failed to fetch order details: " + response.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -1426,14 +1426,14 @@ public class PaymentMain extends JPanel {
                 .toList();
         setAmenity(amenityDTOS);
 
-        response = orderDetailService.getOrderDetailsByOrderId(orderId);
+        response = surchargeDetailService.getSurchargeDetailsByOrderId(orderId);
 
-        if (response == null || response.getCode() != 200) {
+        if (response == null) {
             JOptionPane.showMessageDialog(null, "Failed to fetch order details: " + response.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        List<SurchargeDetailDTO> surchargeDetailDTOS = (List<SurchargeDetailDTO>) response.getData();
+        List<SurchargeDetailDTO> surchargeDetailDTOS = response.getData() != null ? (List<SurchargeDetailDTO>) response.getData() : new ArrayList<>();
 
         List<SurchargeDTO> surchargeDTOS = surchargeDetailDTOS.stream()
                 .map(e -> {
