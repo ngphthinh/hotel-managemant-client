@@ -72,7 +72,7 @@ public class EmployeeServiceClient implements ServiceClient {
 
     }
 
-    public Response getAllAmenities() throws Exception {
+    public Response getAllEmployee() throws Exception {
         return socket.send(Request.builder()
                 .commandType(CommandType.EMPLOYEE_GET_ALL)
                 .build()).get();

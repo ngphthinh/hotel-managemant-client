@@ -15,10 +15,9 @@ import iuh.fit.se.group1.ui.component.modal.InfoPromotionModal;
 import iuh.fit.se.group1.ui.component.table.TableActionEvent;
 import iuh.fit.se.group1.util.Constants;
 import iuh.fit.se.group1.util.ExportUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import raven.glasspanepopup.GlassPanePopup;
 
 import javax.swing.*;
@@ -36,9 +35,9 @@ import java.util.List;
 /**
  * @author Windows
  */
+@Slf4j
 public class PromotionManagement extends JPanel {
 
-    private static final Logger log = LoggerFactory.getLogger(PromotionManagement.class);
     private final PromotionServiceClient promotionService;
 
     private static final int GET_ALL = 0;
@@ -138,7 +137,6 @@ public class PromotionManagement extends JPanel {
 
                     List<PromotionDTO> imported = (List<PromotionDTO>) response.getData();
                     if (imported != null && !imported.isEmpty()) {
-                        fetchData(GET_ALL, null).addAll(imported);
                         loadTable(fetchData(GET_ALL, null));
                         Message.showMessage("Thành công", "Đã import " + imported.size() + " khuyến mãi!");
                     } else {
@@ -146,7 +144,8 @@ public class PromotionManagement extends JPanel {
                     }
                 }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi import file: " + e.getMessage(), "Lỗi import Excel",
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi import file: " + fileChooser.getSelectedFile().getAbsolutePath(), "Lỗi import Excel",
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }

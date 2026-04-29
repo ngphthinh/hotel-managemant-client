@@ -1,5 +1,6 @@
 package iuh.fit.se.group1.dto;
 
+import iuh.fit.se.group1.network.CommandType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

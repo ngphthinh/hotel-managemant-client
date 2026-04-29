@@ -51,6 +51,7 @@ public class CustomerManagement extends JPanel {
     static final int GET_BY_KEYWORD = 2;
 
     private boolean subscribed = false;
+
     public CustomerManagement() {
         initComponents();
         custom();
@@ -132,8 +133,6 @@ public class CustomerManagement extends JPanel {
 
                     List<CustomerDTO> imported = (List<CustomerDTO>) response.getData();
                     if (imported != null && !imported.isEmpty()) {
-                        fetchData(GET_ALL, null).addAll(imported);
-                        loadTable(fetchData(GET_ALL, null));
                         Message.showMessage("Thành công", "Đã import " + imported.size() + " khách hàng!");
                     } else {
                         Message.showMessage("Lỗi", "Không có dữ liệu nào được import!");
@@ -150,7 +149,13 @@ public class CustomerManagement extends JPanel {
             try {
 
 
-                byte[] data = ExportUtil.exportTableToExcel(tblCustomer.getTbl(), "Danh sách khách hàng", true);
+                Response response = customerService.getAllCustomer();
+                if (response == null || response.getCode() != 200) {
+                    JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + (response != null ? response.getCode() : "No response"), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                byte[] data = ExportUtil.exportTableToExcelCustomer((List<CustomerDTO>) response.getData(), "Danh sách khách hàng");
 
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setDialogTitle("Lưu file Excel");
@@ -420,7 +425,6 @@ public class CustomerManagement extends JPanel {
             public void changedUpdate(DocumentEvent e) {
 
             }
-
 
 
         });

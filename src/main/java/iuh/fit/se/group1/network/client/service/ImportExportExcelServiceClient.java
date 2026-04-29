@@ -18,9 +18,7 @@ import java.util.List;
 public class ImportExportExcelServiceClient implements ServiceClient {
     private final ClientSocketManager socket;
 
-    public Response exportTableToExcel(List<String> columns,List<List<Object>> data , String title, boolean b) throws Exception {
-
-
+    public Response exportTableToExcel(List<String> columns, List<List<Object>> data, String title, boolean b) throws Exception {
 
         ExportRequest request = ExportRequest.builder()
                 .title(title)

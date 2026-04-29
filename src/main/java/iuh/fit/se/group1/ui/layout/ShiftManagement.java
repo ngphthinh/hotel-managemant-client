@@ -77,7 +77,7 @@ public class ShiftManagement extends JPanel {
 
     private void loadAllEmployees() {
         try {
-            Response response = employeeService.getAllAmenities();
+            Response response = employeeService.getAllEmployee();
 
             if (response.getCode() != 200) {
                 log.error("Failed to load employees: Server returned HTTP Status {}", response.getCode());
@@ -126,7 +126,7 @@ public class ShiftManagement extends JPanel {
         try {
             Response response = null;
             if (type == GET_ALL) {
-                response = employeeService.getAllAmenities();
+                response = employeeService.getAllEmployee();
 
             } else if (type == GET_BY_KEYWORD) {
                 response = employeeService.getEmployeeByKeyword(filter);

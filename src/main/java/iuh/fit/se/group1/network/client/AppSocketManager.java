@@ -65,7 +65,7 @@ public class AppSocketManager {
 
                 if (socket.connect(host, port)) {
                     initialized = true;
-                    log.info("✓ Connected");
+                    log.info("Connected");
                     startAutoReconnect();
                     return true;
                 }
@@ -80,11 +80,10 @@ public class AppSocketManager {
             }
         }
 
-        log.error("✗ Cannot connect after {} retries", MAX_RETRIES);
+        log.error("Cannot connect after {} retries", MAX_RETRIES);
         return false;
     }
 
-    // ================= RECONNECT =================
     public static synchronized boolean reconnect() {
         log.info("Reconnecting...");
         shutdown();

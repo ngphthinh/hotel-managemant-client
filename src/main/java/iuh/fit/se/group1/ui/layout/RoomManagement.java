@@ -151,7 +151,6 @@ public class RoomManagement extends JPanel {
 
                     List<RoomViewDTO> imported = (List<RoomViewDTO>) response.getData();
                     if (imported != null && !imported.isEmpty()) {
-                        fetchData(GET_ALL, null).addAll(imported);
                         loadTable(fetchData(GET_ALL, null));
                         Message.showMessage("Thành công", "Đã import " + imported.size() + " phòng!");
                     } else {

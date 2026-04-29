@@ -123,7 +123,7 @@ public class AdvancedSplashScreen extends JWindow {
         timer = new Timer(80, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                progress++;
+                progress += 30;
                 progressBar.setValue(progress);
                 int stepIndex = (progress - 1) * loadingSteps.length / 100;
                 if (stepIndex >= 0 && stepIndex < loadingSteps.length) {

@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import raven.glasspanepopup.GlassPanePopup;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -42,7 +41,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -84,7 +82,7 @@ public class EmployeeManagement extends JPanel {
         try {
             Response response = null;
             if (type == GET_ALL) {
-                response = employeeService.getAllAmenities();
+                response = employeeService.getAllEmployee();
 
             } else if (type == GET_BY_KEYWORD) {
                 response = employeeService.getEmployeeByKeyword(filter);
@@ -135,7 +133,6 @@ public class EmployeeManagement extends JPanel {
 
                     List<EmployeeDTO> imported = (List<EmployeeDTO>) response.getData();
                     if (imported != null && !imported.isEmpty()) {
-                        fetchData(GET_ALL, "").addAll(imported);
                         loadTable(fetchData(GET_ALL, ""));
                         Message.showMessage("Thành công", "Đã import " + imported.size() + " nhân viên!");
                     } else {
@@ -722,7 +719,15 @@ public class EmployeeManagement extends JPanel {
     private void exportAllEmployeesToExcel() {
         try {
 
-            byte[] data = ExportUtil.exportTableToExcel(tblEmployee.getTbl(), "Danh sách nhân viên", true);
+            Response response = employeeService.getAllEmployee();
+
+            if (response == null || response.getCode() != 200) {
+                JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + (response != null ? response.getCode() : "null") + ": " + (response != null ? response.getMessage() : "No response"), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+
+            byte[] data = ExportUtil.exportTableToExcelEmployee((List<EmployeeDTO>) response.getData(), "Danh sách nhân viên");
 
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Lưu file Excel");

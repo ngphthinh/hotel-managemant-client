@@ -141,9 +141,7 @@ public class AmenityManagement extends JPanel {
                             return;
                         }
 
-                        List<AmenityDTO> allAmenities = (List<AmenityDTO>) response.getData();
-                        allAmenities.addAll(imported);
-                        loadTable(allAmenities);
+                       loadTable((List<AmenityDTO>) response.getData());
 
                         Message.showInfo("Thành công", "Đã import " + imported.size() + " dịch vụ từ Excel!");
                     } else {
