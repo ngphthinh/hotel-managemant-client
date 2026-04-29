@@ -6,6 +6,7 @@ import iuh.fit.se.group1.network.Request;
 import iuh.fit.se.group1.network.Response;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -123,6 +124,11 @@ public class ClientSocketManager {
             case ORDER_REFRESH -> ClientEventBus.orderEventBus.publish(response);
             case EMPLOYEE_REFRESH -> ClientEventBus.employeeEventBus.publish(response);
             case CUSTOMER_REFRESH -> ClientEventBus.customerEventBus.publish(response);
+            case ACCOUNT_DELETED -> {
+                JOptionPane.showMessageDialog(null, "Tài khoản của bạn đã bị xóa. Vui lòng đăng nhập lại với tài khoản khác.", "Tài khoản bị xóa", JOptionPane.WARNING_MESSAGE);
+                disconnect();
+                System.exit(0);
+            }
             default -> {
                 log.warn("Received response with unhandled command type: " + type);
             }

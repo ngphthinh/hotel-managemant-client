@@ -147,6 +147,7 @@ public class MainLayout extends JPanel {
                         setMainContent(shiftManagement);
                     } else if (index == 3 && subIndex == 2) {
                         setMainContent(employeeManagement);
+
                     } else if (index == 4) {
                         customerManagement.loadData();
                         setMainContent(customerManagement);
@@ -523,6 +524,7 @@ public class MainLayout extends JPanel {
             paymentPage = new PaymentPagev2();
             paymentPage.setCurrentEmployee(currentEmployee);
             employeeManagement = new EmployeeManagement();
+            employeeManagement.setCurrentEmployee(currentEmployee);
             customerManagement = new CustomerManagement();
             amenityManagement = new AmenityManagement();
             promotionManagement = new PromotionManagement();

@@ -23,10 +23,11 @@ import iuh.fit.se.group1.ui.component.shift.ShiftList;
 import iuh.fit.se.group1.ui.component.table.TableActionEvent;
 import iuh.fit.se.group1.util.Constants;
 import iuh.fit.se.group1.util.ExportUtil;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import raven.glasspanepopup.GlassPanePopup;
 
 import javax.swing.*;
@@ -50,15 +51,16 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-
+@Slf4j
 public class EmployeeManagement extends JPanel {
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeManagement.class);
     private final EmployeeServiceClient employeeService;
     private final RoleServiceClient roleService;
     private int activeFilterColumn = -1;
     private ShiftList shiftList;
-
+    @Getter
+    @Setter
+    private EmployeeDTO currentEmployee;
     static final int GET_ALL = 1;
     static final int GET_BY_KEYWORD = 2;
 //    private static final int GET_BY_ = 3;
@@ -327,6 +329,12 @@ public class EmployeeManagement extends JPanel {
 
             @Override
             public void onDelete(int row) {
+
+                if (tblEmployee.getTbl().getValueAt(row, 0) == currentEmployee.getEmployeeId()) {
+                    JOptionPane.showMessageDialog(null, "Bạn không thể xóa chính mình!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 String title = "Xác nhận xóa nhân viên";
                 String message = "Bạn có chắc chắn muốn xóa nhân viên này không?";
                 Message.showConfirm(title, message, () -> {
@@ -343,7 +351,14 @@ public class EmployeeManagement extends JPanel {
                         Long id = (Long) model.getValueAt(rowDelete, 0);
 
                         try {
-                            employeeService.deleteEmployee(id);
+                            Response response = employeeService.deleteEmployee(id);
+                            if (response == null || response.getCode() != 200) {
+                                JOptionPane.showMessageDialog(null, "Server returned HTTP Status " + response.getCode() + ": " + response.getMessage());
+                                return;
+
+
+                            }
+
                             model.removeRow(rowDelete);
                         } catch (Exception e) {
                             CustomDialog.showMessage(null,
