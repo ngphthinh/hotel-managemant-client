@@ -30,11 +30,15 @@ public class Main2 {
         // Initialize Socket Client Connection
         System.out.println("Initializing socket connection...");
         if (AppSocketManager.initialize("LAPTOP-Q1PTRMJM", 3637)) {
-            log.info("Socket connected successfully!");
+            System.out.println("✓ Socket connected successfully!");
         } else {
-            log.error("Socket connection failed!");
+            JOptionPane.showMessageDialog(null,
+                    "Không thể kết nối đến server. Vui lòng thử lại sau.",
+                    "Lỗi kết nối",
+                    JOptionPane.ERROR_MESSAGE);
+            System.out.println("✗ Warning: Socket connection failed. Is TestServer running?");
+            return;
         }
-
         // Add shutdown hook for cleanup
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down application...");

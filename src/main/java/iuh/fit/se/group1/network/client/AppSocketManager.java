@@ -1,11 +1,12 @@
 package iuh.fit.se.group1.network.client;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class AppSocketManager {
 
-    private static final Logger log = LoggerFactory.getLogger(AppSocketManager.class);
 
     private static ClientSocketManager socket;
     private static volatile boolean initialized = false;
@@ -22,6 +23,28 @@ public class AppSocketManager {
     // ================= INIT =================
     public static synchronized boolean initialize() {
         return initialize(DEFAULT_HOST, DEFAULT_PORT);
+    }
+
+    private static volatile boolean autoReconnectRunning = false;
+
+    private static void startAutoReconnect() {
+        if (autoReconnectRunning) return;
+
+        autoReconnectRunning = true;
+
+        new Thread(() -> {
+            while (autoReconnectRunning) {
+                try {
+                    if (!isConnected()) {
+                        log.warn("Socket disconnected → reconnecting...");
+                        reconnect();
+                    }
+                    sleep();
+                } catch (Exception e) {
+                    log.error("Auto-reconnect error: {}", e.getMessage());
+                }
+            }
+        }, "socket-reconnect-thread").start();
     }
 
     public static synchronized boolean initialize(String host, int port) {
@@ -43,6 +66,7 @@ public class AppSocketManager {
                 if (socket.connect(host, port)) {
                     initialized = true;
                     log.info("✓ Connected");
+                    startAutoReconnect();
                     return true;
                 }
 
@@ -64,11 +88,18 @@ public class AppSocketManager {
     public static synchronized boolean reconnect() {
         log.info("Reconnecting...");
         shutdown();
-        return initialize();
+
+        while (true) {
+            if (initialize()) return true;
+
+            log.warn("Reconnect failed → retrying...");
+            sleep();
+        }
     }
 
     // ================= SHUTDOWN =================
     public static synchronized void shutdown() {
+        autoReconnectRunning = false;
         if (socket != null) {
             socket.disconnect();
         }

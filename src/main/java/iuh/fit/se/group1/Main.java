@@ -32,7 +32,12 @@ public class Main {
         if (AppSocketManager.initialize("LAPTOP-Q1PTRMJM", 3637)) {
             System.out.println("✓ Socket connected successfully!");
         } else {
+            JOptionPane.showMessageDialog(null,
+                    "Không thể kết nối đến server. Vui lòng thử lại sau.",
+                    "Lỗi kết nối",
+                    JOptionPane.ERROR_MESSAGE);
             System.out.println("✗ Warning: Socket connection failed. Is TestServer running?");
+            return;
         }
 
         // Add shutdown hook for cleanup

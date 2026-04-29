@@ -41,7 +41,6 @@ public class ClientSocketManager {
     public boolean connect(String host, int port) {
         try {
             socket = new Socket(host, port);
-
             out = new ObjectOutputStream(socket.getOutputStream());
             out.flush();
             in = new ObjectInputStream(socket.getInputStream());
@@ -56,9 +55,9 @@ public class ClientSocketManager {
     }
 
     public CompletableFuture<Response> send(Request request) throws IOException {
-        if (!connected)
-            throw new IOException("Not connected");
-
+        if (!isConnected()) {
+            throw new IOException("Socket not connected");
+        }
         String requestId = UUID.randomUUID().toString();
         request.setRequestId(requestId);
 
@@ -92,7 +91,19 @@ public class ClientSocketManager {
                     }
 
                 } catch (Exception e) {
+                    log.error("Socket disconnected: {}", e.getMessage());
+
                     connected = false;
+
+                    // fail tất cả request đang chờ
+                    pending.forEach((id, future) ->
+                            future.completeExceptionally(new IOException("Disconnected"))
+                    );
+                    pending.clear();
+
+                    disconnect(); // đóng socket sạch
+
+                    break; // thoát thread
                 }
             }
         });
@@ -137,6 +148,6 @@ public class ClientSocketManager {
     }
 
     public boolean isConnected() {
-        return connected && socket != null && socket.isConnected();
+        return connected && socket != null && !socket.isClosed();
     }
 }
