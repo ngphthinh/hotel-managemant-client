@@ -22,6 +22,7 @@ import iuh.fit.se.group1.ui.component.modal.InfoEmployeeModal;
 import iuh.fit.se.group1.ui.component.shift.ShiftList;
 import iuh.fit.se.group1.ui.component.table.TableActionEvent;
 import iuh.fit.se.group1.util.Constants;
+import iuh.fit.se.group1.util.ExportUtil;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Objects;
@@ -208,9 +210,13 @@ public class EmployeeManagement extends JPanel {
                 modal.getCmbGender().setSelectedItem(genderStr);
 
                 String roleName = employee.getAccount() != null && employee.getAccount().getRole() != null
-                        ? employee.getAccount().getRole().getRoleName()
+                        ? employee.getAccount().getRole().getRoleId()
                         : "N/A";
-                modal.getCmbPosition().setSelectedItem(roleName);
+
+                int indexPosition = roleName.equals(Role.MANAGER.name()) ? 1 : 0;
+
+
+                modal.getCmbPosition().setSelectedIndex(indexPosition);
 
                 // Load avatar hiện tại
                 AvatarLabel avatarLabel = modal.getAvatarLabel();
@@ -383,6 +389,9 @@ public class EmployeeManagement extends JPanel {
                 modal.getLblTitle().setText("Thông tin nhân viên");
                 modal.getBtnSave().setText("Xong");
 
+
+                log.info("Viewing employee details for ID: {}", employee);
+
                 modal.getLblCode().setText(String.valueOf(employee.getEmployeeId()));
                 modal.getTxtName().setText(employee.getFullName());
                 modal.getTxtPhone().setText(employee.getPhone());
@@ -394,9 +403,15 @@ public class EmployeeManagement extends JPanel {
                 modal.getCmbGender().setSelectedItem(genderStr);
 
                 String roleName = employee.getAccount() != null && employee.getAccount().getRole() != null
-                        ? employee.getAccount().getRole().getRoleName()
+                        ? employee.getAccount().getRole().getRoleId()
                         : "N/A";
-                modal.getCmbPosition().setSelectedItem(roleName);
+
+                int indexPosition = roleName.equals(Role.MANAGER.name()) ? 1 : 0;
+
+                System.out.println(indexPosition);
+
+
+                modal.getCmbPosition().setSelectedIndex(indexPosition);
 
                 // Hiển thị avatar từ database
                 AvatarLabel avatarLabel = modal.getAvatarLabel();
@@ -701,6 +716,38 @@ public class EmployeeManagement extends JPanel {
     }
 
     private void exportAllEmployeesToExcel() {
+        try {
+
+            byte[] data = ExportUtil.exportTableToExcel(tblEmployee.getTbl(), "Danh sách nhân viên", true);
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Lưu file Excel");
+
+            // ✔ tên file mặc định
+            String defaultFileName = "DanhSachNhanVien_" +
+                    LocalDate.now().format(DateTimeFormatter.ofPattern("ddMMyyyy")) + ".xlsx";
+
+            fileChooser.setSelectedFile(new File(defaultFileName));
+
+            int result = fileChooser.showSaveDialog(this);
+
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+
+                if (!file.getName().toLowerCase().endsWith(".xlsx")) {
+                    file = new File(file.getAbsolutePath() + ".xlsx");
+                }
+
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    fos.write(data);
+                }
+
+                Message.showMessage("Thành công", "Đã lưu file: " + file.getAbsolutePath());
+            }
+
+        } catch (Exception ex) {
+            Message.showMessage("Lỗi", ex.getMessage());
+        }
 
     }
 
@@ -755,7 +802,6 @@ public class EmployeeManagement extends JPanel {
 
                 DefaultTableModel model = (DefaultTableModel) tblEmployee.getTbl().getModel();
                 String genderStr = employeeSave.isGender() ? "Nữ" : "Nam";
-
 
 
                 model.addRow(new Object[]{
@@ -880,6 +926,23 @@ public class EmployeeManagement extends JPanel {
                     // Đang thêm mới -> luôn báo lỗi nếu CCCD đã tồn tại
                     modal.getLblErrolCitizen().setText("CCCD đã tồn tại!");
                     modal.getLblErrolCitizen().setForeground(red);
+                    valid = false;
+                }
+            }
+            response = SocketFacade.getInstance().getEmployee().getEmployeesByPhone(phone);
+            existingEmployee = (EmployeeDTO) response.getData();
+            if (existingEmployee != null) {
+                if (currentEmployeeId != null) {
+                    if (!existingEmployee.getEmployeeId().equals(currentEmployeeId)) {
+                        modal.getLblErrolPhone().setText("Số điện thoại đã tồn tại!");
+                        modal.getLblErrolPhone().setForeground(red);
+                        valid = false;
+                    }
+                } else {
+//                     Đang thêm mới -> luôn báo lỗi nếu CCCD đã tồn tại
+
+                    modal.getLblErrolPhone().setText("Số điện thoại đã tồn tại!");
+                    modal.getLblErrolPhone().setForeground(red);
                     valid = false;
                 }
             }

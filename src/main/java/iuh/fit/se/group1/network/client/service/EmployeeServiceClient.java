@@ -105,4 +105,11 @@ public class EmployeeServiceClient implements ServiceClient {
                 .request(id)
                 .build()).get();
     }
+
+    public Response getEmployeesByPhone(String phone) throws IOException, ExecutionException, InterruptedException, TimeoutException {
+        return socket.send(Request.builder()
+                .commandType(CommandType.EMPLOYEE_GET_BY_PHONE)
+                .request(phone)
+                .build()).get(30, TimeUnit.SECONDS);
+    }
 }

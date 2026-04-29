@@ -9,17 +9,24 @@ import iuh.fit.se.group1.network.client.ClientSocketManager;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class ImportExportExcelServiceClient implements ServiceClient {
     private final ClientSocketManager socket;
 
-    public Response exportTableToExcel(JTable tbl, String title, boolean b) throws Exception {
+    public Response exportTableToExcel(List<String> columns,List<List<Object>> data , String title, boolean b) throws Exception {
+
+
+
         ExportRequest request = ExportRequest.builder()
                 .title(title)
                 .excludeLastColumn(b)
-                .table(tbl)
+                .columnHeaders(columns)
+                .data(data)
                 .build();
         return socket.send(Request.builder()
                 .request(request)

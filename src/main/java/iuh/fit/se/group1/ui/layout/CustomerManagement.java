@@ -596,7 +596,8 @@ public class CustomerManagement extends JPanel {
             modal.getLblErrolCitizen().setText("Vui lòng nhập số CCCD/CMND!");
             isValid = false;
 
-        } else if (!citizen.matches("^[0-9]{12}$") || !citizen.matches(regexPassport)) {
+        } else if (!citizen.matches("^[0-9]{12}$") && !citizen.matches(regexPassport)) {
+            System.out.println("Citizen input: " + citizen);
             modal.getLblErrolCitizen().setText("Số CCCD hoặc passport không hợp lệ!");
             isValid = false;
         }

@@ -764,7 +764,7 @@ public class InvoicePanel extends JPanel {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        if (response == null || response.getCode() != 200) {
+        if (response == null || (response.getCode() != 200 && response.getCode() != 404)) {
             JOptionPane.showMessageDialog(this, "Không thể tải chi tiết phụ phí: " + (response != null ? response.getMessage() : "No response"),
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;

@@ -19,6 +19,8 @@ public enum CommandType implements Serializable {
     EMPLOYEE_CREATE,
     EMPLOYEE_UPDATE,
     EMPLOYEE_DELETE,
+    EMPLOYEE_GET_BY_PHONE,
+
 
     AMENITY_GET_BY_ID,
     AMENITY_GET_ALL,
