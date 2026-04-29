@@ -80,7 +80,6 @@ public class RoomManagement extends JPanel {
     }
 
     private void reloadRoomTable() {
-        System.out.println("Received room update event, reloading table...");
         loadTable(fetchData(GET_ALL, null));
     }
 
@@ -380,13 +379,11 @@ public class RoomManagement extends JPanel {
         TableActionEvent event = new TableActionEvent() {
             @Override
             public void onEdit(int row) {
-                System.out.println("Edit row: " + row);
                 handleEditRoom(row);
             }
 
             @Override
             public void onDelete(int row) {
-                System.out.println("Delete row: " + row);
                 handleDeleteRoom(row);
             }
         };
@@ -405,7 +402,6 @@ public class RoomManagement extends JPanel {
         String type = String.valueOf(model.getValueAt(modelRow, 2));
         String status = String.valueOf(model.getValueAt(modelRow, 3));
 
-        System.out.println("Room data - ID: " + roomId + ", Number: " + number + ", Type: " + type + ", Status: " + status);
 
         // Kiểm tra phòng có trong hóa đơn loại 2 hoặc 3 không
         Response response = null;
@@ -496,13 +492,11 @@ public class RoomManagement extends JPanel {
         // Convert view row index to model row index
         int modelRow = table.convertRowIndexToModel(row);
 
-        System.out.println("Delete - View row: " + row + ", Model row: " + modelRow);
 
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         // Use modelRow instead of row
         Object idObj = model.getValueAt(modelRow, 0);
         Long roomId = idObj instanceof Number ? ((Number) idObj).longValue() : Long.parseLong(String.valueOf(idObj));
-        System.out.println("Deleting room ID: " + roomId);
 
         int confirm = CustomDialog.showConfirm(this, "Bạn có chắc chắn muốn xóa phòng này?", "Xác nhận xóa",
                 CustomDialog.MessageType.WARNING,
@@ -1006,7 +1000,6 @@ public class RoomManagement extends JPanel {
     }
 
     private void btnImportActionPerformed(ActionEvent evt) {
-        System.out.println("Import Excel clicked");
     }
 
     private Button btnAddRoom;

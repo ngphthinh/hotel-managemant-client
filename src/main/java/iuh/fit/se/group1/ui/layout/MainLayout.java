@@ -16,6 +16,7 @@ import iuh.fit.se.group1.ui.component.paymentv2.PaymentPagev2;
 import iuh.fit.se.group1.ui.component.version.CheckForVersionPanel;
 import iuh.fit.se.group1.util.Constants;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import raven.glasspanepopup.GlassPanePopup;
 
 import javax.swing.*;
@@ -26,6 +27,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 public class MainLayout extends JPanel {
 
     private JPanel pnlMain;
@@ -62,7 +64,7 @@ public class MainLayout extends JPanel {
         init();
         setOpaque(false);
         if (!subscribedOrder) {
-            ClientEventBus.surchargeEventBus.subscribe(response -> {
+            ClientEventBus.orderEventBus.subscribe(response -> {
                 SwingUtilities.invokeLater(this::refreshData);
             });
             subscribedOrder = true;
@@ -112,7 +114,7 @@ public class MainLayout extends JPanel {
         pnlContent = new JPanel(new BorderLayout());
         pnlMain.add(pnlContent, BorderLayout.CENTER);
         add(pnlMain, BorderLayout.CENTER);
-        closeShift = new CloseShift();
+
         sideBar.getMenu1().setMenuEvent(new MenuEvent() {
             @Override
             public void selected(int index, int subIndex) {
@@ -218,7 +220,6 @@ public class MainLayout extends JPanel {
     }
 
     private void handleGuidePanel() {
-        System.out.println("Guide Panel");
         try {
             Desktop.getDesktop().browse(new URI("https://vienthieu6925.github.io/user/"));
         } catch (Exception e) {
@@ -343,29 +344,19 @@ public class MainLayout extends JPanel {
                     isOverdue = currentTime.isAfter(endTimeWithBuffer);
                 }
 
-                // Debug log
-                System.out.println("=== Kiểm tra ca: " + shift.getShift().getName() + " ===");
-                System.out.println("Giờ bắt đầu: " + startTime);
-                System.out.println("Giờ kết thúc: " + endTime);
-                System.out.println("Giờ hiện tại: " + currentTime);
-                System.out.println("Ca đêm: " + isNightShift);
-                System.out.println("Sau giờ bắt đầu: " + isAfterStart);
-                System.out.println("Trước giờ kết thúc + buffer: " + isBeforeBufferEnd);
-                System.out.println("Quá hạn: " + isOverdue);
+
 
                 // CHỈ LẤY CA ĐANG TRONG THỜI GIAN HỢP LỆ (không lấy ca quá hạn)
                 if (isAfterStart && isBeforeBufferEnd && shiftToClose == null) {
                     shiftToClose = shift;
-                    System.out.println(">>> Chọn ca để đóng: " + shift.getShift().getName());
                 }
 
                 // Lưu ca quá hạn để CẢNH BÁO (nhưng không cho đóng trực tiếp)
                 if (isAfterStart && isOverdue && overdueShift == null) {
                     overdueShift = shift;
-                    System.out.println(">>> Ca quá hạn: " + shift.getShift().getName());
                 }
             } catch (Exception e) {
-                System.err.println("Lỗi parse time cho ca: " + shift.getShift().getName() + " - " + e.getMessage());
+                log.error("Lỗi parse time cho ca: {} - {}", shift.getShift().getName(), e.getMessage());
             }
         }
 
@@ -527,6 +518,7 @@ public class MainLayout extends JPanel {
             revenueStatistics = new RevenueStatistics();
             bookingTrend = new BookingTrend();
             surchargeManagement = new SurchargeManagement();
+            closeShift = new CloseShift();
             setMainContent(dashboard);
         } else {
             dashboardEmployee = new DashboardEmployee();

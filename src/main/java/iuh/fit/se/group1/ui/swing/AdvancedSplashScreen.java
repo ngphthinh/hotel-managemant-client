@@ -1,6 +1,8 @@
 package iuh.fit.se.group1.ui.swing;
 
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.util.concurrent.CountDownLatch;
 
+@Slf4j
 public class AdvancedSplashScreen extends JWindow {
     private JProgressBar progressBar;
     private JLabel lblStatus;
@@ -190,9 +193,9 @@ public class AdvancedSplashScreen extends JWindow {
         // Luồng xử lý khởi tạo
         new Thread(() -> {
             try {
-                System.out.println("Đang tải dữ liệu ứng dụng...");
-                Thread.sleep(3000); // mô phỏng thời gian tải
-                System.out.println("Hoàn tất tải dữ liệu!");
+                log.info("Đang tải dữ liệu ứng dụng...");
+                Thread.sleep(2000);
+                log.info("Hoàn tất tải dữ liệu!");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {

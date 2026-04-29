@@ -56,16 +56,13 @@ public class PromotionManagement extends JPanel {
         loadTable(fetchData(GET_ALL, null));
 
         if (!subscribed) {
-            ClientEventBus.roomEventBus.subscribe(response -> {
-                SwingUtilities.invokeLater(this::reloadRoomTable);
-            });
+            ClientEventBus.promotionEventBus.subscribe(response -> SwingUtilities.invokeLater(this::reloadPromotionTable));
             subscribed = true;
         }
 
     }
 
-    private void reloadRoomTable() {
-        System.out.println("Received room update event, reloading promotion table...");
+    private void reloadPromotionTable() {
         loadTable(fetchData(GET_ALL, null));
     }
 
@@ -78,8 +75,9 @@ public class PromotionManagement extends JPanel {
             } else if (type == GET_BY_KEYWORD) {
                 response = promotionService.getPromotionByKeyword(filter);
             }
-            if (response == null || response.getCode() != 200) {
-                JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + response.getCode());
+            if (response == null || (response.getCode() != 200 && response.getCode() != 404)) {
+                JOptionPane.showMessageDialog(this, "Server returned HTTP Status " + response.getCode() + "\nMessage: " + response.getMessage(),
+                        "Lỗi lấy dữ liệu khuyến mãi", JOptionPane.ERROR_MESSAGE);
                 return List.of();
             }
             return (List<PromotionDTO>) response.getData();
@@ -95,16 +93,18 @@ public class PromotionManagement extends JPanel {
     private void loadTable(List<PromotionDTO> promotions) {
         DefaultTableModel model = (DefaultTableModel) tblPromotion.getTbl().getModel();
         model.setRowCount(0);
-        for (PromotionDTO promotion : promotions) {
-            model.addRow(new Object[] {
-                    promotion.getPromotionId(),
-                    promotion.getPromotionName(),
-                    Constants.VND_FORMAT.format(promotion.getMinOrderAmount()),
-                    promotion.getDiscountPercent() + "%",
-                    promotion.getStartDate().format(Constants.DATE_FORMATTER),
-                    promotion.getEndDate().format(Constants.DATE_FORMATTER),
-                    promotion.getCreatedAt().format(Constants.DATE_FORMATTER)
-            });
+        if (promotions != null) {
+            for (PromotionDTO promotion : promotions) {
+                model.addRow(new Object[]{
+                        promotion.getPromotionId(),
+                        promotion.getPromotionName(),
+                        Constants.VND_FORMAT.format(promotion.getMinOrderAmount()),
+                        promotion.getDiscountPercent() + "%",
+                        promotion.getStartDate().format(Constants.DATE_FORMATTER),
+                        promotion.getEndDate().format(Constants.DATE_FORMATTER),
+                        promotion.getCreatedAt().format(Constants.DATE_FORMATTER)
+                });
+            }
         }
     }
 
@@ -131,7 +131,7 @@ public class PromotionManagement extends JPanel {
                     Response response = importService.importPromotionsFromExcel(file);
                     if (response == null || response.getCode() != 200) {
                         JOptionPane.showMessageDialog(this, "Lỗi khi import file: "
-                                + (response != null ? response.getMessage() : "Không nhận được phản hồi từ server"),
+                                        + (response != null ? response.getMessage() : "Không nhận được phản hồi từ server"),
                                 "Lỗi import Excel", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
@@ -505,9 +505,8 @@ public class PromotionManagement extends JPanel {
                 return;
             }
 
-            System.out.println("Khuyến mãi đã lưu: " + entitySave);
             DefaultTableModel model = (DefaultTableModel) tblPromotion.getTbl().getModel();
-            model.addRow(new Object[] {
+            model.addRow(new Object[]{
                     entitySave.getPromotionId(),
                     entitySave.getPromotionName(),
                     Constants.VND_FORMAT.format(entitySave.getMinOrderAmount()),
@@ -644,12 +643,12 @@ public class PromotionManagement extends JPanel {
     }
 
     private record Valid(String name,
-            boolean valid,
-            BigDecimal discountPrice,
-            float discountPercent,
-            String description,
-            LocalDate startDate,
-            LocalDate endDate) {
+                         boolean valid,
+                         BigDecimal discountPrice,
+                         float discountPercent,
+                         String description,
+                         LocalDate startDate,
+                         LocalDate endDate) {
 
     }
 

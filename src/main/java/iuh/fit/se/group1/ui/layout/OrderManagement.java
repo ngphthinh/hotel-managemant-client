@@ -8,6 +8,7 @@ import com.raven.datechooser.DateChooser;
 import com.raven.datechooser.SelectedAction;
 import iuh.fit.se.group1.dto.EmployeeDTO;
 import iuh.fit.se.group1.dto.OrderDTO;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.EmployeeServiceClient;
@@ -42,6 +43,7 @@ public class OrderManagement extends JPanel {
     private String currentTypeFilter = "Tất cả";
     private DateChooser dateChooser;
     private LocalDate selectedDate;
+    private boolean subscribed = false;
 
     static final int GET_ALL = 0;
     static final int GET_WITH_RELATIONSHIP = 1;
@@ -56,6 +58,10 @@ public class OrderManagement extends JPanel {
         orderService = SocketFacade.getInstance().getOrder();
         selectedDate = LocalDate.now(); // Default to today
         loadData();
+        if (!subscribed) {
+            ClientEventBus.orderEventBus.subscribe(response -> SwingUtilities.invokeLater(this::loadData));
+            subscribed = true;
+        }
     }
 
     public void loadData() {
@@ -311,7 +317,6 @@ public class OrderManagement extends JPanel {
                 try {
                     // Convert view row to model row khi có filter
                     int modelRow = tblOrder.getTbl().convertRowIndexToModel(row);
-                    System.out.println("View row: " + modelRow);
 
                     Long id = Long.valueOf(tblOrder.getTbl().getModel().getValueAt(modelRow, 0).toString());
                     Response response = orderService.getOrderById(id);
@@ -509,9 +514,7 @@ public class OrderManagement extends JPanel {
 
                 checkOut = order.getBookings().get(0).getCheckOutDate().format(Constants.DATE_FORMATTER);
             } catch (Exception e) {
-                order.getBookings().forEach(booking -> {
-                    System.out.println(booking.getBookingId());
-                });
+
                 throw new RuntimeException(e);
             }
 

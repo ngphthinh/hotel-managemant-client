@@ -381,7 +381,6 @@ public class SurchargeManagement extends JPanel {
                                 return;
                             }
                             Object idValue = model.getValueAt(row, 0);
-                            System.out.println(">>> ID type: " + idValue.getClass() + " | value = " + idValue);
 
                             Response response = surchargeService.updateSurcharge(
                                     SurchargeDTO.builder()

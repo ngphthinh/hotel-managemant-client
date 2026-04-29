@@ -69,9 +69,6 @@ public class CloseShift extends JPanel {
         }
     }
 
-    /**
-     * THIẾT LẬP TIMER TỰ ĐỘNG CẬP NHẬT MỖI 3 GIÂY
-     */
     private void setupAutoRefresh() {
         autoRefreshTimer = new Timer(3000, e -> {
             if (currentEmployeeShift != null) {
@@ -137,8 +134,6 @@ public class CloseShift extends JPanel {
                 String username = confirmModal.getUsername();
                 String password = confirmModal.getPassword();
 
-                System.out.println("Username result: '" + username + "' (isEmpty: " + username.isEmpty() + ")");
-                System.out.println("Password result length: " + password.length() + " (isEmpty: " + password.isEmpty() + ")");
 
                 if (username.isEmpty() || password.isEmpty()) {
                     Message.showMessage("Lỗi", "Vui lòng nhập đầy đủ thông tin!");

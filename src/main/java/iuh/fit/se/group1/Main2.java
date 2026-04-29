@@ -3,12 +3,14 @@ package iuh.fit.se.group1;
 
 import iuh.fit.se.group1.network.client.AppSocketManager;
 import iuh.fit.se.group1.ui.swing.AdvancedSplashScreen;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
 
+@Slf4j
 public class Main2 {
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);
@@ -28,14 +30,14 @@ public class Main2 {
         // Initialize Socket Client Connection
         System.out.println("Initializing socket connection...");
         if (AppSocketManager.initialize("LAPTOP-Q1PTRMJM", 3637)) {
-            System.out.println("✓ Socket connected successfully!");
+            log.info("Socket connected successfully!");
         } else {
-            System.out.println("✗ Warning: Socket connection failed. Is TestServer running?");
+            log.error("Socket connection failed!");
         }
 
         // Add shutdown hook for cleanup
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            System.out.println("Shutting down...");
+            System.out.println("Shutting down application...");
             AppSocketManager.shutdown();
         }));
 

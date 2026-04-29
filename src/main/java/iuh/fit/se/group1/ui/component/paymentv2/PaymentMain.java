@@ -1014,7 +1014,6 @@ public class PaymentMain extends JPanel {
         }
 
        if (response == null || (response.getCode() != 200 && response.getCode() != 400))  {
-            System.out.println("Response from save surcharges: " + response);
             JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra khi lưu phụ phí. Vui lòng thử lại sau!",
                     "Thông báo lỗi", JOptionPane.ERROR_MESSAGE);
             return;
@@ -1309,7 +1308,6 @@ public class PaymentMain extends JPanel {
 
         // Add action listener BEFORE showing dialog (modal blocks execution)
         surchargeManagementPanel.getSaveButton().addActionListener(e -> {
-            System.out.println("Saving surcharges...");
             List<SurchargeDTO> selectedSurcharges = surchargeManagementPanel.getSelectedTableData();
             updateSurchargeTable(selectedSurcharges);
             saveSurcharges(selectedSurcharges.size());
@@ -1485,11 +1483,6 @@ public class PaymentMain extends JPanel {
 
             RoomTypeDTO roomType = room.getRoomType();
 
-            if (roomType == null) {
-                System.out.println("Room ID " + room.getRoomId() + " has no associated room type.");
-            } else {
-                System.out.println(roomType);
-            }
 
             Response response = bookingService.getPriceFromBooking(booking);
 

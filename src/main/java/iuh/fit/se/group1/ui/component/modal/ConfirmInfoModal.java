@@ -207,9 +207,7 @@ public class ConfirmInfoModal extends JPanel {
         if (text == null) {
             return "";
         }
-        String trimmed = text.trim();
-        System.out.println("DEBUG getUsername: '" + text + "' -> trimmed: '" + trimmed + "' (length: " + trimmed.length() + ")");
-        return trimmed;
+        return text.trim();
     }
 
     public String getPassword() {
@@ -218,11 +216,9 @@ public class ConfirmInfoModal extends JPanel {
         }
         char[] pwd = txtPassword.getPassword();
         if (pwd == null || pwd.length == 0) {
-            System.out.println("DEBUG getPassword: NULL or EMPTY");
             return "";
         }
         String result = new String(pwd).trim();
-        System.out.println("DEBUG getPassword: length = " + result.length());
         java.util.Arrays.fill(pwd, ' ');
         return result;
     }

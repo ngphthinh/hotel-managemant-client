@@ -70,7 +70,6 @@ public class CashPaymentModal extends JPanel {
 
         java.util.List<Integer> suggestions = service.getPaymentOptions(totalThousand);
 
-        System.out.println(suggestions);
 
         for (int suggestion : suggestions) {
             long value = suggestion * 1000L;

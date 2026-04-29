@@ -756,7 +756,6 @@ public class EmployeeManagement extends JPanel {
                 DefaultTableModel model = (DefaultTableModel) tblEmployee.getTbl().getModel();
                 String genderStr = employeeSave.isGender() ? "Nữ" : "Nam";
 
-                System.out.println(employeeSave);
 
 
                 model.addRow(new Object[]{

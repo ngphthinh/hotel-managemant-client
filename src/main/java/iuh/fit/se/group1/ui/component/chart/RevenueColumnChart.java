@@ -50,7 +50,6 @@ public class RevenueColumnChart extends JPanel {
         }
 
         double chartMaxValue = calculateChartMaxValue(maxValue);
-        System.out.println("Recreating chart with scale: " + chartMaxValue + " (data max: " + maxValue + ")");
 
         // XÓA chart cũ và TẠO MỚI chart để đảm bảo scale được reset
         if (revenueColumnChart != null) {

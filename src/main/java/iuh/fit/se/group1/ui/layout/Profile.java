@@ -8,6 +8,7 @@ import iuh.fit.se.group1.dto.EmployeeDTO;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.AuthServiceClient;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 
@@ -19,6 +20,7 @@ import java.awt.event.FocusEvent;
 /**
  * @author Windows
  */
+@Slf4j
 public class Profile extends JPanel {
     private JTextField txtEmail;
     private JTextField txtUserName;
@@ -91,7 +93,7 @@ public class Profile extends JPanel {
         if (employee.getAccount() != null && employee.getAccount().getUsername() != null) {
             txtUserName.setText(employee.getAccount().getUsername());
         }
-        System.out.println("Đã cập nhật thông tin employee lên Profile: " + employee.getFullName());
+        log.info("Đã cập nhật thông tin employee lên Profile: " + employee.getFullName());
     }
 
     private void setupMainLayout() {

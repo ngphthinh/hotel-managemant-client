@@ -11,6 +11,7 @@ import iuh.fit.se.group1.ui.component.custom.Button;
 import iuh.fit.se.group1.ui.component.custom.Combobox;
 import iuh.fit.se.group1.ui.component.custom.TextField;
 import iuh.fit.se.group1.util.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 
@@ -29,6 +30,7 @@ import java.util.Date;
  *
  * @author Windows
  */
+@Slf4j
 public class InfoEmployeeModal extends JPanel {
 
     public Button getBtnClose() {
@@ -110,9 +112,9 @@ public class InfoEmployeeModal extends JPanel {
                 avatarLabel.setImage(image);
                 avatarLabel.revalidate();
                 avatarLabel.repaint();
-                System.out.println("Image set to existing avatarLabel: " + image.getWidth() + "x" + image.getHeight());
+                log.info("Image set to existing avatarLabel: {}x{}", image.getWidth(), image.getHeight());
             } else {
-                System.err.println("avatarLabel is null!");
+                log.info("Image set to null avatarLabel");
             }
 
         } catch (Exception ex) {

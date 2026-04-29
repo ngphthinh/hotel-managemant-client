@@ -197,7 +197,6 @@ public class BookingPage extends JPanel {
         Response response = orderService.createOrder(order, orderDetails);
 
         if (response.getCode() != 200) {
-            System.out.println(response);
             CustomDialog.showMessage(
                     null,
                     "Tạo đơn đặt phòng thất bại: " + response.getMessage(),
@@ -260,7 +259,6 @@ public class BookingPage extends JPanel {
         Response response = null;
         try {
             response = roomService.getAvailableRooms(checkIn, checkOut);
-            System.out.println("Available rooms response: " + response);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

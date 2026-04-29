@@ -10,6 +10,7 @@ import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.OrderServiceClient;
 import iuh.fit.se.group1.util.Constants;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import java.util.List;
 /**
  * @author THIS PC
  */
+@Slf4j
 public class RevenueStatistics extends JPanel {
 
     private final OrderServiceClient orderService = SocketFacade.getInstance().getOrder();
@@ -148,19 +150,16 @@ public class RevenueStatistics extends JPanel {
             }
 
             if (!hasData) {
-                System.out.println("WARNING: All revenue values are ZERO!");
+                log.warn("All revenue values are ZERO for the selected date range: {} to {}", from, to);
             } else {
-                // Print some sample data
                 for (int i = 0; i < Math.min(3, labels.size()); i++) {
-                    System.out.println(String.format("  %s: Single=%.0f, Double=%.0f",
-                            labels.get(i), values.get(i)[0], values.get(i)[1]));
+                    log.info(labels.get(i));
                 }
             }
         }
 
         // revenueColumnChart1.
         revenueColumnChart1.setData(labels, values);
-        System.out.println("Chart update completed!");
     }
 
     /**

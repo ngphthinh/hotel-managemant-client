@@ -136,7 +136,6 @@ public class BookingTrend extends JPanel {
         // Hiển thị lên card
         card1.setValue(totalBookings + " Lượt");
 
-        System.out.println("Card updated: " + totalBookings + " bookings from " + start + " to " + end);
     }
 
     /**
@@ -186,10 +185,8 @@ public class BookingTrend extends JPanel {
                     List<PeakHourDto> result = get();
                     if (result != null) {
                         lineChartPanel2.updateData(result);
-                        System.out.println("LineChartPanel2 updated with " + result.size() + " peak hour data points");
                     }
                 } catch (Exception e) {
-                    System.err.println("Error updating LineChartPanel2: " + e.getMessage());
                     e.printStackTrace();
                 }
             }

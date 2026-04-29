@@ -23,7 +23,6 @@ public class Table extends JPanel {
         TableActionEvent event = new TableActionEvent() {
             @Override
             public void onEdit(int row) {
-                System.out.println("Edit row: " + row);
             }
 
             @Override

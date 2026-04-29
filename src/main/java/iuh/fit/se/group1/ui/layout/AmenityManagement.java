@@ -72,14 +72,12 @@ public class AmenityManagement extends JPanel {
             throw new RuntimeException(e);
         }
         if (!subscribed) {
-            ClientEventBus.roomEventBus.subscribe(response -> {
-                SwingUtilities.invokeLater(this::reloadRoomTable);
-            });
+            ClientEventBus.amenityEventBus.subscribe(response -> SwingUtilities.invokeLater(this::reloadAmenityTable));
             subscribed = true;
         }
     }
 
-    public void reloadRoomTable() {
+    public void reloadAmenityTable() {
         try {
             Response response = amenityService.getAllAmenities();
             if (response.getCode() != 200) {

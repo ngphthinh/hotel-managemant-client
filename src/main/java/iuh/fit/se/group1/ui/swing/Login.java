@@ -53,10 +53,8 @@ public class Login extends JFrame {
     private JButton btnEye = new JButton();
     private String currentLoginUsername; // Track current logged-in user for logout
 
-    private SocketFacade socketFacade;
 
     public Login() {
-        this.socketFacade = SocketFacade.getInstance();
         Image icon = Toolkit.getDefaultToolkit()
                 .getImage(getClass().getResource("/images/logo64.png"));
 
@@ -386,7 +384,7 @@ public class Login extends JFrame {
             new Thread(() -> {
                 try {
 
-                    Response response = socketFacade.getAuth().login(user, pass);
+                    Response response = SocketFacade.getInstance().getAuth().login(user, pass);
 
                     if (response.getCode() == 200) {
                         Object data = response.getData();
@@ -395,9 +393,7 @@ public class Login extends JFrame {
                         // For now, we'll use the authenticate response
                         AccountDTO account = (AccountDTO) data;
 
-                        System.out.println("Login successful, account: " + account);
-                        Response employee = socketFacade.getEmployee().getEmployeeByAccountId(account.getAccountId());
-                        System.out.println("Employee info: " + employee);
+                        Response employee = SocketFacade.getInstance().getEmployee().getEmployeeByAccountId(account.getAccountId());
 
 
                         SwingUtilities.invokeLater(() -> {
@@ -484,7 +480,7 @@ public class Login extends JFrame {
 
         // Get employee using socket in background thread
         try {
-            Response response = socketFacade.getEmployee().getEmployeeByCitizenId(citizenId);
+            Response response = SocketFacade.getInstance().getEmployee().getEmployeeByCitizenId(citizenId);
             if (response.getCode() == 200) {
                 EmployeeDTO employee = (EmployeeDTO) response.getData();
 
@@ -514,7 +510,7 @@ public class Login extends JFrame {
 
     private void sendCodeToEmail(EmployeeDTO employee) {
         try {
-            socketFacade.getAuth().resetPassword(employee.getAccount().getUsername());
+            SocketFacade.getInstance().getAuth().resetPassword(employee.getAccount().getUsername());
         } catch (Exception e) {
             log.error("Error resetting password", e);
         }
@@ -538,7 +534,7 @@ public class Login extends JFrame {
                     .replace("{{current_year}}", String.valueOf(LocalDate.now().getYear()));
 
 
-            Response response = socketFacade.getEmail().sendEmail(EmailRequest.builder()
+            Response response = SocketFacade.getInstance().getEmail().sendEmail(EmailRequest.builder()
                     .to(employee.getEmail())
                     .subject("Đặt lại mật khẩu - Hệ thống quản lý khách sạn Đào Tiên")
                     .email(html)
@@ -587,7 +583,7 @@ public class Login extends JFrame {
             new Thread(() -> {
                 try {
                     log.info("User '{}' logged out", username);
-                    socketFacade.getAuth().logout(username);
+                    SocketFacade.getInstance().getAuth().logout(username);
                 } catch (IOException e) {
                     log.error("Error calling logout API", e);
                 } catch (Exception e) {

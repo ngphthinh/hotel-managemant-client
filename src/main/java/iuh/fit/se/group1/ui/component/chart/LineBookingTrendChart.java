@@ -7,6 +7,7 @@ import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.OrderServiceClient;
 import iuh.fit.se.group1.ui.component.custom.message.CustomDialog;
 import iuh.fit.se.group1.ui.component.dashboard.DateCalculator;
+import lombok.extern.slf4j.Slf4j;
 import raven.chart.ChartLegendRenderer;
 import raven.chart.data.category.DefaultCategoryDataset;
 import raven.chart.line.LineChart;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+@Slf4j
 public class LineBookingTrendChart extends JPanel {
 
     private final OrderServiceClient orderService;
@@ -81,7 +83,7 @@ public class LineBookingTrendChart extends JPanel {
             // Cập nhật maxBookingCount
             maxBookingCount = Math.max(maxBookingCount, Math.max(singleRoomCount, doubleRoomCount));
 
-            System.out.println("Date: " + dateStr + " | Single: " + singleRoomCount + ", Double: " + doubleRoomCount);
+            log.info("Date: {} | Single: {}, Double: {}", dateStr, singleRoomCount, doubleRoomCount);
 
             categoryDataset.addValue(singleRoomCount, "Phòng đơn", dateStr);
             categoryDataset.addValue(doubleRoomCount, "Phòng đôi", dateStr);
@@ -91,7 +93,6 @@ public class LineBookingTrendChart extends JPanel {
 
         // Tính maxValues cho trục Y
         double chartMaxValue = calculateChartMaxValue(maxBookingCount);
-        System.out.println("Line chart max value: " + chartMaxValue + " (data max: " + maxBookingCount + ")");
 
         // WORKAROUND: Thêm data point ẩn với giá trị = chartMaxValue để buộc chart scale đúng
         // Thêm vào đầu tiên để set scale, sau đó data thật sẽ hiển thị đúng
@@ -118,7 +119,6 @@ public class LineBookingTrendChart extends JPanel {
     private void updateChartWithData(DefaultCategoryDataset<String, String> categoryDataset, double chartMaxValue) {
         // Kiểm tra nếu không có dữ liệu
         if (categoryDataset.getColumnCount() == 0) {
-            System.out.println("No data to display in chart");
             return;
         }
 
@@ -177,7 +177,6 @@ public class LineBookingTrendChart extends JPanel {
                 int maxLabelsToShow = 10;
                 final double labelInterval = diff > 0 ? Math.max(1, Math.ceil((double) validCount / maxLabelsToShow)) : 1;
 
-                System.out.println("Chart range: " + diff + " days, Valid data points: " + validCount + ", Label interval: " + labelInterval);
 
                 lineChart.setLegendRenderer(new ChartLegendRenderer() {
                     @Override
@@ -227,18 +226,12 @@ public class LineBookingTrendChart extends JPanel {
     private void setLineChartMaxValues(double maxValue) {
         try {
 
-            // In ra tất cả fields của LineChart
-            System.out.println("LineChart fields:");
-            for (java.lang.reflect.Field f : LineChart.class.getDeclaredFields()) {
-                System.out.println("  - " + f.getName() + " (" + f.getType().getSimpleName() + ")");
-            }
 
             // Thử tìm blankPlotChart
             java.lang.reflect.Field blankPlotChartField = null;
             for (java.lang.reflect.Field f : LineChart.class.getDeclaredFields()) {
                 if (f.getName().toLowerCase().contains("blank") || f.getName().toLowerCase().contains("plot")) {
                     blankPlotChartField = f;
-                    System.out.println("\nFound potential field: " + f.getName());
                     break;
                 }
             }
@@ -248,27 +241,20 @@ public class LineBookingTrendChart extends JPanel {
                 Object blankPlotChart = blankPlotChartField.get(lineChart);
 
                 if (blankPlotChart != null) {
-                    System.out.println("BlankPlotChart type: " + blankPlotChart.getClass().getName());
-                    System.out.println("BlankPlotChart fields:");
 
                     Class<?> clazz = blankPlotChart.getClass();
-                    for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
-                        System.out.println("  - " + f.getName() + " (" + f.getType().getSimpleName() + ")");
-                    }
+
 
                     // Thử set maxValues
                     for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
                         if (f.getName().toLowerCase().contains("max")) {
                             f.setAccessible(true);
-                            System.out.println("\nTrying to set field: " + f.getName() + " (type: " + f.getType() + ")");
 
                             if (f.getType() == double.class) {
                                 f.setDouble(blankPlotChart, maxValue);
-                                System.out.println("✓ Successfully set " + f.getName() + " = " + maxValue);
                                 return;
                             } else if (f.getType() == Double.class) {
                                 f.set(blankPlotChart, maxValue);
-                                System.out.println("✓ Successfully set " + f.getName() + " = " + maxValue);
                                 return;
                             }
                         }
@@ -276,10 +262,8 @@ public class LineBookingTrendChart extends JPanel {
                 }
             }
 
-            System.out.println("✗ Could not set maxValues - no suitable field found");
 
         } catch (Exception e) {
-            System.err.println("Error setting maxValues: " + e.getMessage());
             e.printStackTrace();
         }
     }
