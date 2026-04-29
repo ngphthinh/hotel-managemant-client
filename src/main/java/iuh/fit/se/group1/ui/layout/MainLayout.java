@@ -54,6 +54,7 @@ public class MainLayout extends JPanel {
     private BookingTrend bookingTrend;
 
     private boolean subscribedOrder = false;
+    private boolean subscribedEmployee = false;
 
     private float alpha = 1f;
     private SideBar sideBar;
@@ -69,6 +70,19 @@ public class MainLayout extends JPanel {
             });
             subscribedOrder = true;
         }
+
+        if (!subscribedEmployee) {
+            ClientEventBus.employeeEventBus.subscribe(response -> {
+                SwingUtilities.invokeLater(this::refreshDataEmployee);
+            });
+            subscribedEmployee = true;
+        }
+
+    }
+
+    private void refreshDataEmployee() {
+        employeeManagement.loadData();
+        shiftManagement.getShiftList().reloadEmployees();
     }
 
     public void refreshData() {
@@ -80,6 +94,7 @@ public class MainLayout extends JPanel {
             roomManagement.loadData();
             revenueStatistics.loadData();
             bookingTrend.loadData();
+            customerManagement.loadData();
         } else {
             dashboardEmployee.reloadDashboardData();
         }

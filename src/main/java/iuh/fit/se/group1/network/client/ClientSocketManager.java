@@ -121,6 +121,8 @@ public class ClientSocketManager {
             case PROMOTION_REFRESH -> ClientEventBus.promotionEventBus.publish(response);
             case SURCHARGE_REFRESH -> ClientEventBus.surchargeEventBus.publish(response);
             case ORDER_REFRESH -> ClientEventBus.orderEventBus.publish(response);
+            case EMPLOYEE_REFRESH -> ClientEventBus.employeeEventBus.publish(response);
+            case CUSTOMER_REFRESH -> ClientEventBus.customerEventBus.publish(response);
             default -> {
                 log.warn("Received response with unhandled command type: " + type);
             }

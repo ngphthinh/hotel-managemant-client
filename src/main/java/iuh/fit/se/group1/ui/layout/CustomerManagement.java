@@ -5,6 +5,7 @@
 package iuh.fit.se.group1.ui.layout;
 
 import iuh.fit.se.group1.dto.CustomerDTO;
+import iuh.fit.se.group1.network.ClientEventBus;
 import iuh.fit.se.group1.network.Response;
 import iuh.fit.se.group1.network.client.SocketFacade;
 import iuh.fit.se.group1.network.client.service.CustomerServiceClient;
@@ -49,11 +50,18 @@ public class CustomerManagement extends JPanel {
     static final int GET_ALL = 1;
     static final int GET_BY_KEYWORD = 2;
 
+    private boolean subscribed = false;
     public CustomerManagement() {
         initComponents();
         custom();
         customerService = SocketFacade.getInstance().getCustomer();
         loadTable(fetchData(GET_ALL, null));
+
+        if (!subscribed) {
+            ClientEventBus.orderEventBus.subscribe(response -> SwingUtilities.invokeLater(this::loadData));
+            subscribed = true;
+        }
+
     }
 
     public List<CustomerDTO> fetchData(int type, String filter) {

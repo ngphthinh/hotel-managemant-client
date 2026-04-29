@@ -73,6 +73,10 @@ public class EmployeeManagement extends JPanel {
         loadTable(fetchData(GET_ALL, ""));
     }
 
+    public void loadData() {
+        loadTable(fetchData(GET_ALL, ""));
+
+    }
 
     public List<EmployeeDTO> fetchData(int type, String filter) {
 
