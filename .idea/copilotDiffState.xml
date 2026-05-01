@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/README.md">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/README.md" />
+              <option name="updatedContent" value="#  Hotel Management System - Đào Tiên Hotel&#10;&#10;&gt; Ứng dụng **Frontend/Client** desktop được phát triển bằng **Java Swing** để kết nối tới hệ thống quản lý khách sạn.&#10;&#10;---&#10;&#10;##  Backend / Server repository&#10;&#10;Mã nguồn server của dự án nằm tại:&#10;&#10;https://github.com/ngphthinh/daotien-hotel-management.git&#10;&#10;---&#10;&#10;##  Giới thiệu&#10;&#10;Đây là phần **client** của hệ thống, chịu trách nhiệm hiển thị giao diện, xử lý tương tác người dùng và giao tiếp với server qua socket.&#10;&#10;Ứng dụng hỗ trợ các luồng nghiệp vụ chính như:&#10;&#10;- ✅ Đăng nhập / đăng xuất&#10;- ✅ Quản lý phòng, khách hàng, nhân viên&#10;- ✅ Đặt phòng và thanh toán&#10;- ✅ Quản lý dịch vụ, phụ thu, hóa đơn&#10;- ✅ Dashboard thống kê và biểu đồ&#10;- ✅ In hóa đơn PDF / cập nhật dữ liệu từ server&#10;&#10;---&#10;&#10;## ️ Công nghệ sử dụng&#10;&#10;| Công nghệ | Mục đích |&#10;|----------|----------|&#10;| **Java 17** | Ngôn ngữ lập trình chính |&#10;| **Java Swing** | Giao diện desktop |&#10;| **Maven** | Quản lý dependencies và build |&#10;| **Socket / Object Stream** | Giao tiếp với server |&#10;| **JasperReports** | Xuất / in hóa đơn PDF |&#10;| **FlatLaf** | Giao diện hiện đại |&#10;| **MigLayout** | Bố cục UI |&#10;&#10;---&#10;&#10;## ⚙️ Cấu hình cần thiết&#10;&#10;File cấu hình chính của client:&#10;&#10;```properties&#10;src/main/resources/application.properties&#10;```&#10;&#10;Ví dụ hiện tại:&#10;&#10;```properties&#10;server.port=3637&#10;server.host=LAPTOP-Q1PTRMJM&#10;```&#10;&#10;&gt; Nếu server chạy trên máy khác, hãy đổi `server.host` cho phù hợp.&#10;&#10;---&#10;&#10;##  Cách chạy ứng dụng&#10;&#10;### 1) Build project&#10;&#10;```bash&#10;mvn clean package&#10;```&#10;&#10;### 2) Chạy ứng dụng&#10;&#10;- Mở project bằng IntelliJ IDEA / Eclipse / NetBeans&#10;- Chạy class chính: `iuh.fit.se.group1.Main`&#10;&#10;Hoặc chạy từ JAR sau khi build:&#10;&#10;```bash&#10;java -jar target/hotel-mamanger-client-1.0-SNAPSHOT.jar&#10;```&#10;&#10;---&#10;&#10;##  Lưu ý&#10;&#10;- Backend/server cần được khởi động trước khi mở client.&#10;- Nếu không kết nối được, kiểm tra lại `server.host` và `server.port`.&#10;- Repository này chỉ chứa phần **frontend/client**.&#10;&#10;---&#10;&#10;##  Nhóm phát triển&#10;&#10;- Nhóm 1 - Khoa Công nghệ Thông tin, IUH&#10;&#10;---&#10;&#10;##  License&#10;&#10;Dự án này được sử dụng cho mục đích học tập và phát triển nội bộ." />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
