@@ -1,12 +1,10 @@
 package iuh.fit.se.group1.dto;
 
-import iuh.fit.se.group1.network.CommandType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.List;
 

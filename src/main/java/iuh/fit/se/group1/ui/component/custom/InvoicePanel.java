@@ -666,7 +666,7 @@ public class InvoicePanel extends JPanel {
                         checkIn,
                         checkOut,
                         bookingType,
-                        price
+                        Constants.VND_FORMAT.format(price)
                 });
             }
         }

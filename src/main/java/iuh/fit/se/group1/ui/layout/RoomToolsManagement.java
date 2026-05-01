@@ -10,6 +10,7 @@ import iuh.fit.se.group1.network.client.service.RoomToolsServiceClient;
 import iuh.fit.se.group1.ui.component.custom.message.CustomDialog;
 import iuh.fit.se.group1.ui.component.modal.ExtendBookingModal;
 import iuh.fit.se.group1.ui.component.scroll.ScrollPaneWin11;
+import iuh.fit.se.group1.util.Constants;
 import raven.glasspanepopup.GlassPanePopup;
 
 import javax.swing.*;
@@ -1084,13 +1085,13 @@ public class RoomToolsManagement extends JPanel {
             throw new RuntimeException("Lỗi khi tính phụ phí: " + (response != null ? response.getMessage() : "No response from server"));
         }
 
-        long surcharge = (long) response.getData();
+        double surcharge = (double) response.getData();
 
         if (surcharge > 0) {
-            txtTotalSurcharge.setText(String.format("+%,dđ", surcharge));
+            txtTotalSurcharge.setText(Constants.VND_FORMAT.format(surcharge));
             txtTotalSurcharge.setForeground(new Color(220, 38, 38));
         } else if (surcharge < 0) {
-            txtTotalSurcharge.setText(String.format("%,dđ", surcharge));
+            txtTotalSurcharge.setText(Constants.VND_FORMAT.format(surcharge));
             txtTotalSurcharge.setForeground(new Color(16, 185, 129));
         } else {
             txtTotalSurcharge.setText("0đ");
@@ -1162,7 +1163,7 @@ public class RoomToolsManagement extends JPanel {
 
         }
 
-        long surcharge = (long) response.getData();
+        double surcharge = (double) response.getData();
 
         String oldRoomNumbers = selectedOldRooms.stream()
                 .map(RoomViewDTO::getRoomNumber)
@@ -1175,11 +1176,11 @@ public class RoomToolsManagement extends JPanel {
                 .orElse("");
 
         String message = String.format(
-                "Xác nhận chuyển phòng từ %s sang %s với phụ phí %s%,dđ?",
+                "Xác nhận chuyển phòng từ %s sang %s với phụ phí %s%s?",
                 oldRoomNumbers,
                 newRoomNumbers,
                 surcharge >= 0 ? "+" : "",
-                surcharge);
+                Constants.VND_FORMAT.format(surcharge));
 
         int confirm = JOptionPane.showConfirmDialog(this, message, "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {

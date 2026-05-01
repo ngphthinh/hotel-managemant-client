@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +18,8 @@ public class AmenityDTO implements Serializable {
     private String nameAmenity;
     private BigDecimal price;
     private int quantity;
+    private LocalDate createdAt;
+
 
     @Override
     public String toString() {

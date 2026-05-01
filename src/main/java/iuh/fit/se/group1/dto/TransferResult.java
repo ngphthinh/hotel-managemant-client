@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class TransferResult implements java.io.Serializable {
     private boolean success;
     private String message;
-    private long surcharge;
+    private double surcharge;
 }

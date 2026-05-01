@@ -594,8 +594,13 @@ public class OrderEditDialog extends JDialog {
             for (OrderDetailDTO d : amenityDetails) {
                 Long id = d.getAmenity() != null ? d.getAmenity().getAmenityId() : null;
                 String name = d.getAmenity() != null ? d.getAmenity().getNameAmenity() : "";
-                AmenityDTO amenityDTO = new AmenityDTO(id, name, d.getUnitPrice(), d.getQuantity());
-                amenityModel.addRow(new Object[]{index++, amenityDTO, d.getUnitPrice(), d.getQuantity()});
+                AmenityDTO amenity = AmenityDTO.builder()
+                        .amenityId(id)
+                        .nameAmenity(name)
+                        .price(d.getUnitPrice())
+                        .quantity(d.getQuantity())
+                        .build();
+                amenityModel.addRow(new Object[]{index++, amenity, d.getUnitPrice(), d.getQuantity()});
             }
         }
 
@@ -612,7 +617,13 @@ public class OrderEditDialog extends JDialog {
                 Long id = s.getSurcharge() != null ? s.getSurcharge().getSurchargeId() : null;
                 String name = s.getSurcharge() != null ? s.getSurcharge().getName() : "";
                 BigDecimal price = s.getSurcharge() != null ? s.getSurcharge().getPrice() : BigDecimal.ZERO;
-                SurchargeDTO surchargeDTO = new SurchargeDTO(id, name, price, s.getQuantity());
+//                SurchargeDTO surchargeDTO = new SurchargeDTO(id, name, price, s.getQuantity());
+                SurchargeDTO surchargeDTO = SurchargeDTO.builder()
+                        .surchargeId(id)
+                        .price(price)
+                        .name(name)
+                        .quantity(s.getQuantity())
+                        .build();
                 surchargeModel.addRow(new Object[]{index++, surchargeDTO, price, s.getQuantity()});
             }
         }

@@ -20,4 +20,6 @@ public class CustomerDTO implements Serializable {
     private String citizenId;
     private boolean gender;
     private LocalDate dateOfBirth;
+    private LocalDate createdAt;
+
 }
