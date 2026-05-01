@@ -29,7 +29,7 @@ public class Main {
 
         // Initialize Socket Client Connection
         System.out.println("Initializing socket connection...");
-        if (AppSocketManager.initialize("LAPTOP-Q1PTRMJM", 3637)) {
+        if (AppSocketManager.initialize("DESKTOP-VIET", 3637)) {
             System.out.println("✓ Socket connected successfully!");
         } else {
             JOptionPane.showMessageDialog(null,

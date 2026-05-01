@@ -1,5 +1,7 @@
 package iuh.fit.se.group1.network.client.service;
 
+import iuh.fit.se.group1.dto.EmployeeShiftActiveRequest;
+import iuh.fit.se.group1.dto.EmployeeShiftByEmpDateRequest;
 import iuh.fit.se.group1.dto.EmployeeShiftDTO;
 import iuh.fit.se.group1.network.CommandType;
 import iuh.fit.se.group1.network.Response;
@@ -49,7 +51,7 @@ public class EmployeeShiftServiceClient implements ServiceClient {
     public Response getShiftsByEmployeeAndDate(Long employeeId, LocalDate date) throws Exception {
         return clientSocketManager.send(iuh.fit.se.group1.network.Request.builder()
                 .commandType(CommandType.EMPLOYEE_SHIFT_GET_BY_EMPLOYEE_AND_DATE)
-                .request(new Object[]{employeeId, date})
+                .request(new EmployeeShiftByEmpDateRequest(employeeId, date))
                 .build()).get();
     }
 
@@ -77,10 +79,9 @@ public class EmployeeShiftServiceClient implements ServiceClient {
     public Response getActiveOpenShift(long employeeId, LocalDate date) throws Exception {
         return clientSocketManager.send(iuh.fit.se.group1.network.Request.builder()
                 .commandType(CommandType.EMPLOYEE_SHIFT_GET_ACTIVE_OPEN_SHIFTS)
-                .request(new Object[]{employeeId, date})
+                .request(new EmployeeShiftActiveRequest(employeeId, date))
                 .build()).get();
     }
-
     public Response getAllShiftsByDate(LocalDate date) throws Exception {
 
         return clientSocketManager.send(iuh.fit.se.group1.network.Request.builder()
