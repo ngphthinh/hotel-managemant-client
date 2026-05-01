@@ -313,7 +313,7 @@ public class CustomerManagement extends JPanel {
                             return;
                         }
 
-                        boolean isSuccess = true;
+                        boolean isSuccess = (boolean) response.getData();
                         if (!isSuccess) {
                             CustomDialog.showMessage(null, "Không thể xóa khách hàng này vì đang có hóa đơn liên quan!", "Lỗi", CustomDialog.MessageType.ERROR, 500, 300);
                         } else {

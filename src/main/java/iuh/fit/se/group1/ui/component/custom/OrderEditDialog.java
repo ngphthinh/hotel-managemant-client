@@ -605,7 +605,7 @@ public class OrderEditDialog extends JDialog {
         }
 
         response = surchargeDetailService.getSurchargeDetailsByOrderId(order.getOrderId());
-        if (response == null || response.getCode() != 200) {
+        if (response == null) {
             JOptionPane.showMessageDialog(this, "Surcharge details not found or Server Error: " + (response != null ? response.getMessage() : "No response"));
             return;
         }

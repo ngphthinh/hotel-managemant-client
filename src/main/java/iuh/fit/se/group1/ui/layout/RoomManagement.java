@@ -39,6 +39,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class RoomManagement extends JPanel {
@@ -553,7 +554,10 @@ public class RoomManagement extends JPanel {
             isValid = false;
         } else {
             List<RoomViewDTO> existing = fetchData(GET_BY_KEYWORD, number);
-            if (existing.stream().anyMatch(r -> !roomId.equals(r.getRoomId()) && r.getRoomNumber().equals(number))) {
+            if (existing.stream().anyMatch(r ->
+                    !Objects.equals(roomId, r.getRoomId())
+                            && number.equals(r.getRoomNumber())
+            )) {
                 modal.getLblErrolNumberRoom().setText("Số phòng đã tồn tại!");
                 isValid = false;
             }
