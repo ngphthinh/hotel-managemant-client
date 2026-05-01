@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class PropertiesReader {
     private static final PropertiesReader instance = new PropertiesReader();
-    private static final String PROPERTIES_FILE = "application-secret.properties";
+    private static final String PROPERTIES_FILE = "application.properties";
     private final Properties properties = new Properties();
 
     private PropertiesReader() {
