@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+
 @Slf4j
 public class AppSocketManager {
 
@@ -81,6 +83,10 @@ public class AppSocketManager {
         }
 
         log.error("Cannot connect after {} retries", MAX_RETRIES);
+
+        JOptionPane.showMessageDialog(null, "Không thể kết nối đến máy chủ sau nhiều lần thử. Vui lòng kiểm tra kết nối của bạn và thử lại.", "Lỗi kết nối", JOptionPane.ERROR_MESSAGE);
+        System.exit(1);
+
         return false;
     }
 

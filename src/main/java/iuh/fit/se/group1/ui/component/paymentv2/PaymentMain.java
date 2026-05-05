@@ -935,6 +935,11 @@ public class PaymentMain extends JPanel {
         String fileName = "hoadon_" + order + "_" +
                 safePaymentDate.format(DateTimeFormatter.ofPattern("ddMMyyyy")) + ".pdf";
         String filePath = OUTPUT_DIR + File.separator + fileName;
+        File dir = new File(OUTPUT_DIR);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         File file = new File(filePath);
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(filePdf);
