@@ -1105,7 +1105,7 @@ public class PaymentMain extends JPanel {
                     String responseCheck = ((PaymentResponse) resCheck.getData()).getRaw();
                     String responseCodeCheck = paymentService.extractJsonValue(responseCheck, "resultCode");
                     String orderIdCheck = paymentService.extractJsonValue(responseCheck, "orderId");
-                    if (!PAYMENT_SUCCESS.equals(responseCodeCheck)) {
+                    if (PAYMENT_SUCCESS.equals(responseCodeCheck)) {
                         CustomDialog.showMessage(null, "Thanh toán thành công cho đơn hàng: " + orderIdCheck,
                                 "Thông báo", CustomDialog.MessageType.SUCCESS, 380, 200);
                         GlassPanePopup.closePopupAll();
