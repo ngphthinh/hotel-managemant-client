@@ -89,14 +89,18 @@ java -jar target/hotel-mamanger-client-1.0-SNAPSHOT.jar
 
 ---
 
-## 👥 Nhóm phát triển
 
-- Nhóm 1 - Khoa Công nghệ Thông tin, IUH
-  - Thành viên nhóm:
-    - Nguyễn Phước Thịnh (23642651) - Team Leader
-    - Trầm Hồng Viên Thiệu (23658881) - Developer & Documentation
-    - Nguyễn Trần Quốc Việt (23660721) - Developer
-    - Hồ Thị Kim Xuyến (23648471) - Tester & Documentation & Developer
+## 🎓 Thông tin dự án
+
+- **Môn học:** Phát triển Ứng dụng và Lập trình phân tán với Java
+- **Khoa:** Công nghệ Thông tin - IUH
+- **Nhóm thực hiện:** Nhóm 1
+- **Năm học:** 2024-2025
+  - Thành viên:
+    - [Nguyễn Phước Thịnh (23642651)](https://github.com/ngphthinh) - Team Leader
+    - [Trầm Hồng Viên Thiệu (23658881)](https://github.com/VienThieu25) - Developer & Documentation
+    - [Nguyễn Trần Quốc Việt (23660721)](https://github.com/ngviet291) - Developer
+    - [Hồ Thị Kim Xuyến (23648471)](https://github.com/Xuyen2805) - Tester & Documentation & Developer
 
 ---
 

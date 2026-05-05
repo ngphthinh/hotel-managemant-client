@@ -243,11 +243,11 @@ public class Login extends JFrame {
 
         txtUser.setBackground(new Color(245, 245, 245));
         txtUser.setLabelText("Tên đăng nhập");
-        txtUser.setText("admin1");
+        txtUser.setText("");
 
         txtPass.setBackground(new Color(245, 245, 245));
         txtPass.setLabelText("Mật khẩu");
-        txtPass.setText("User@123");
+        txtPass.setText("");
 
         btnSignIn.setBackground(new Color(157, 153, 255));
         btnSignIn.setFont(new Font("Segoe UI", 1, 12)); // NOI18N
